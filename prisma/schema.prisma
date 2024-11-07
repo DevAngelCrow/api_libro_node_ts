@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model ctl_formato_libro {
+  id          Int         @id(map: "ctl_formato_libro_pk") @default(autoincrement())
+  formato     String      @db.VarChar
+  manufactura String      @db.VarChar
+  mnt_libro   mnt_libro[]
+}
+
+model ctl_genero {
+  id          Int         @id(map: "ctl_genero_pk")
+  nombre      String      @db.VarChar
+  descripcion String?     @db.VarChar
+  mnt_libro   mnt_libro[]
+}
+
+model ctl_idioma {
+  id               Int                @id(map: "ctl_idioma_pk") @default(autoincrement())
+  idioma           String             @db.VarChar
+  abreviatura      String             @db.VarChar
+  region           String?            @db.VarChar
+  mnt_indice_libro mnt_indice_libro[]
+}
+
+model ctl_pais {
+  id            Int             @id(map: "ctl_pais_pk") @default(autoincrement())
+  nombre        String          @db.VarChar
+  abreviacion   String          @db.VarChar
+  codigo        String          @db.VarChar
+  mnt_autor     mnt_autor[]
+  mnt_editorial mnt_editorial[]
+}
+
+model ctl_tipo_editorial {
+  id            Int             @id(map: "ctl_tipo_editorial_pk") @default(autoincrement())
+  nombre_tipo   String          @db.VarChar
+  mnt_editorial mnt_editorial[]
+}
+
+model mnt_autor {
+  id               Int               @id(map: "mnt_autor_pk") @default(autoincrement())
+  nombres          String            @db.VarChar
+  apellidos        String            @db.VarChar
+  fecha_nacimiento DateTime          @db.Date
+  id_nacionalidad  Int
+  telefono         String            @db.VarChar
+  email            String            @db.VarChar
+  ctl_pais         ctl_pais          @relation(fields: [id_nacionalidad], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_autor_ctl_pais_fk")
+  mnt_libro_autor  mnt_libro_autor[]
+}
+
+model mnt_editorial {
+  id                  Int                   @id(map: "mnt_editorial_pk") @default(autoincrement())
+  nombre              String                @db.VarChar
+  direccion           String                @db.VarChar
+  anio_fundacion      String                @db.VarChar
+  id_pais             Int
+  id_tipo_editorial   Int
+  sitio_web           String?               @db.VarChar
+  telefono            String                @db.VarChar
+  ctl_pais            ctl_pais              @relation(fields: [id_pais], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_editorial_ctl_pais_fk")
+  ctl_tipo_editorial  ctl_tipo_editorial    @relation(fields: [id_tipo_editorial], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_editorial_ctl_tipo_editorial_fk")
+  mnt_libro_editorial mnt_libro_editorial[]
+}
+
+model mnt_indice_libro {
+  id             Int         @id(map: "mnt_indice_libro_pk") @default(autoincrement())
+  id_idioma      Int
+  resumen        String?     @db.VarChar
+  numero_paginas Int
+  ctl_idioma     ctl_idioma  @relation(fields: [id_idioma], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_indice_libro_ctl_idioma_fk")
+  mnt_libro      mnt_libro[]
+}
+
+model mnt_libro {
+  id                  Int                   @id(map: "mnt_libro_pk") @default(autoincrement())
+  nombre              String                @db.VarChar
+  fecha_publicacion   DateTime?             @db.Date
+  id_genero           Int
+  id_indice_libro     Int
+  edicion             String                @db.VarChar
+  portada             String?               @db.VarChar
+  id_formato_libro    Int
+  ctl_formato_libro   ctl_formato_libro     @relation(fields: [id_formato_libro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_ctl_formato_libro_fk")
+  ctl_genero          ctl_genero            @relation(fields: [id_genero], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_ctl_genero_fk")
+  mnt_indice_libro    mnt_indice_libro      @relation(fields: [id_indice_libro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_mnt_indice_libro_fk")
+  mnt_libro_autor     mnt_libro_autor[]
+  mnt_libro_editorial mnt_libro_editorial[]
+}
+
+model mnt_libro_autor {
+  id        Int       @id(map: "mnt_libro_autor_pk") @default(autoincrement())
+  id_libro  Int
+  id_autor  Int
+  mnt_autor mnt_autor @relation(fields: [id_autor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_autor_mnt_autor_fk")
+  mnt_libro mnt_libro @relation(fields: [id_libro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_autor_mnt_libro_fk")
+}
+
+model mnt_libro_editorial {
+  id            Int           @id(map: "mnt_libro_editorial_pk") @default(autoincrement())
+  id_libro      Int
+  id_editorial  Int
+  mnt_editorial mnt_editorial @relation(fields: [id_editorial], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_editorial_mnt_editorial_fk")
+  mnt_libro     mnt_libro     @relation(fields: [id_libro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_editorial_mnt_libro_fk")
+}
