@@ -10,6 +10,7 @@ export class LibroRoutes {
 
         router.post('/create', controller.createLibro );
         router.put('/update/:id', controller.editLibro );
+        router.get('/libro/:id', controller.getLibroById );
         return router;
     }
 }

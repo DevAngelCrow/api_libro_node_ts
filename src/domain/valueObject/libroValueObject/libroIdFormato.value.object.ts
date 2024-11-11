@@ -1,7 +1,7 @@
 import { CustomError } from "../../errors/custom.error";
 
 export class LibroIdFormato {
-  constructor( readonly value: number) {
+  constructor( readonly value: number ) {
     this.idFormatoIsNumberValid();
   }
 

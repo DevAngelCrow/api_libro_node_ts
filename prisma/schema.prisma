@@ -24,12 +24,12 @@ model ctl_genero {
 }
 
 model ctl_idioma {
-  id               Int                @id(map: "ctl_idioma_pk") @default(autoincrement())
-  idioma           String             @db.VarChar
-  abreviatura      String             @db.VarChar
-  region           String?            @db.VarChar
-  estado           Boolean            @default(true)
-  mnt_indice_libro mnt_indice_libro[]
+  id          Int         @id(map: "ctl_idioma_pk") @default(autoincrement())
+  idioma      String      @db.VarChar
+  abreviatura String      @db.VarChar
+  region      String?     @db.VarChar
+  estado      Boolean     @default(true)
+  mnt_libro   mnt_libro[]
 }
 
 model ctl_pais {
@@ -77,29 +77,21 @@ model mnt_editorial {
   mnt_libro_editorial mnt_libro_editorial[]
 }
 
-model mnt_indice_libro {
-  id             Int         @id(map: "mnt_indice_libro_pk") @default(autoincrement())
-  id_idioma      Int
-  resumen        String?     @db.VarChar
-  numero_paginas Int
-  estado         Boolean     @default(true)
-  ctl_idioma     ctl_idioma  @relation(fields: [id_idioma], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_indice_libro_ctl_idioma_fk")
-  mnt_libro      mnt_libro[]
-}
-
 model mnt_libro {
   id                  Int                   @id(map: "mnt_libro_pk") @default(autoincrement())
   nombre              String                @db.VarChar
-  fecha_publicacion   DateTime?             @db.Date
+  fecha_publicacion   DateTime              @db.Date
   id_genero           Int
-  id_indice_libro     Int
   edicion             String                @db.VarChar
-  portada             String?               @db.VarChar
+  portada             String                @db.VarChar
   id_formato_libro    Int
   estado              Boolean               @default(true)
+  id_idioma           Int
+  resumen             String                @db.VarChar
+  numero_paginas      Int
   ctl_formato_libro   ctl_formato_libro     @relation(fields: [id_formato_libro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_ctl_formato_libro_fk")
   ctl_genero          ctl_genero            @relation(fields: [id_genero], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_ctl_genero_fk")
-  mnt_indice_libro    mnt_indice_libro      @relation(fields: [id_indice_libro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_mnt_indice_libro_fk")
+  ctl_idioma          ctl_idioma            @relation(fields: [id_idioma], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_ctl_idioma_fk")
   mnt_libro_autor     mnt_libro_autor[]
   mnt_libro_editorial mnt_libro_editorial[]
 }

@@ -2,14 +2,20 @@ import { CustomError } from "../../errors/custom.error";
 
 export class LibroPortada{
     constructor(
-      readonly value: string,
+      readonly value: string
     ){
-        this.isMaxlengthValid()
+        this.isMaxlengthValid();
+        this.required();
     }
 
     private isMaxlengthValid(){
         if((this.value.length < 3)){
             throw CustomError.badRequest("El nombre debe tener al menos 3 o mas caracteres");
+        }
+    }
+    private required(){
+        if(!this.value){
+            throw CustomError.badRequest("El campo portada es requerido");
         }
     }
 }

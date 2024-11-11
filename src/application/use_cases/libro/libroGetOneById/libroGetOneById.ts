@@ -7,10 +7,10 @@ export class LibroGetOneById {
     constructor (private repository: LibroRepository){}
 
     async run(id: number) : Promise<Libro>{
-        const user = await this.repository.getOneById(new LibroId(id));
+        const libro = await this.repository.getOneById(new LibroId(id));
 
-        if(!user) throw CustomError.notFound("Libro no encontrado");
+        if(!libro) throw CustomError.notFound("Libro no encontrado");
 
-        return user;
+        return libro;
     }
 }

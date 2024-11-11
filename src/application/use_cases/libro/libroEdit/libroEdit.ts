@@ -7,9 +7,11 @@ import {
   LibroGeneroId,
   LibroId,
   LibroIdFormato,
-  LibroIndiceId,
   LibroNombre,
   LibroPortada,
+  LibroIdIdioma,
+  LibroResumen,
+  LibroNumeroPaginas
 } from "../../../../domain/valueObject";
 
 export class LibroEdit {
@@ -20,22 +22,26 @@ export class LibroEdit {
     nombre: string,
     fecha_publicacion: Date,
     id_genero: number,
-    id_indice_libro: number,
     edicion: string,
     portada: string,
     id_formato_libro: number,
-    estado: boolean
+    estado: boolean,
+    id_idioma: number,
+    resumen: string,
+    numero_paginas: number,
   ) : Promise<void> {
     const libro = new Libro(
       new LibroId(id),
-      new LibroNombre(nombre, true),
+      new LibroNombre(nombre),
       new LibroFechaPublicacion(fecha_publicacion),
       new LibroGeneroId(id_genero),
-      new LibroIndiceId(id_indice_libro),
       new LibroEdicion(edicion),
       new LibroPortada(portada),
       new LibroIdFormato(id_formato_libro),
-      new LibroEstado(estado)
+      new LibroIdIdioma(id_idioma),
+      new LibroResumen(resumen),
+      new LibroNumeroPaginas(numero_paginas),
+      new LibroEstado(estado),
     );
 
     return this.repository.update(libro);
