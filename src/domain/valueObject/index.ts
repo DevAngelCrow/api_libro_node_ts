@@ -6,3 +6,4 @@ export * from './libroValueObject/libroIdFormato.value.object';
 export * from './libroValueObject/libroIndId.value.object';
 export * from './libroValueObject/libroNombreValueObject';
 export * from './libroValueObject/libroPortada.value.object';
+export * from './libroValueObject/libroEstado.value.object';

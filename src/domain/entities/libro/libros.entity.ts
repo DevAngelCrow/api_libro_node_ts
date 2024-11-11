@@ -7,6 +7,7 @@ import {
   LibroIndiceId,
   LibroNombre,
   LibroPortada,
+  LibroEstado
 } from "../../valueObject";
 
 export class Libro {
@@ -19,6 +20,7 @@ export class Libro {
     readonly edicion: LibroEdicion,
     readonly portada: LibroPortada,
     readonly id_formato_libro: LibroIdFormato,
+    readonly estado?: LibroEstado,
   ) {
   }
 }

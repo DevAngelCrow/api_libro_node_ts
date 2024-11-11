@@ -1,3 +1,5 @@
+import { CustomError } from "../../errors/custom.error";
+
 export class LibroNombre{
     constructor(
       readonly value: string,
@@ -7,7 +9,7 @@ export class LibroNombre{
 
     private isMaxlengthValid(){
         if((this.value.length < 3)){
-            throw new Error("El nombre debe tener al menos 3 o mas caracteres");
+            throw CustomError.badRequest("El nombre debe tener al menos 3 o mas caracteres");
         }
     }
 }

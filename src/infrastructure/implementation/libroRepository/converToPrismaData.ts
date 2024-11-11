@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { Libro } from "../../../domain/entities/libro/libros.entity";
 
 export class ConvertToPrismaData {
+
   mntLibroToPrisma(libro: Libro): Prisma.mnt_libroCreateInput {
     return {
       nombre: libro.nombre.value,
@@ -14,4 +15,6 @@ export class ConvertToPrismaData {
       //id: libro.id.value,
     };
   }
+
+  
 }

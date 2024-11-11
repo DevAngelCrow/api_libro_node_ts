@@ -1,10 +1,19 @@
 import { Libro } from "../../../../domain/entities/libro/libros.entity";
 import { LibroRepository } from "../../../../domain/repositories/libro/LibroRepository";
-import { LibroEdicion, LibroFechaPublicacion, LibroGeneroId, LibroId, LibroIdFormato, LibroIndiceId, LibroNombre, LibroPortada } from "../../../../domain/valueObject";
+import {
+  LibroEdicion,
+  LibroEstado,
+  LibroFechaPublicacion,
+  LibroGeneroId,
+  LibroId,
+  LibroIdFormato,
+  LibroIndiceId,
+  LibroNombre,
+  LibroPortada,
+} from "../../../../domain/valueObject";
 
 export class LibroCreate {
-  constructor(private repository: LibroRepository) {
-  }
+  constructor(private repository: LibroRepository) {}
 
   async run(
     id: number,
@@ -15,17 +24,18 @@ export class LibroCreate {
     edicion: string,
     portada: string,
     id_formato_libro: number,
-    
+    estado: boolean
   ): Promise<void> {
     const libro = new Libro(
-        new LibroId(id),
-        new LibroNombre(nombre),
-        new LibroFechaPublicacion(fecha_publicacion),
-        new LibroGeneroId(id_genero),
-        new LibroIndiceId(id_indice_libro),
-        new LibroEdicion(edicion),
-        new LibroPortada(portada),
-        new LibroIdFormato(id_formato_libro),
+      new LibroId(id),
+      new LibroNombre(nombre),
+      new LibroFechaPublicacion(fecha_publicacion),
+      new LibroGeneroId(id_genero),
+      new LibroIndiceId(id_indice_libro),
+      new LibroEdicion(edicion),
+      new LibroPortada(portada),
+      new LibroIdFormato(id_formato_libro),
+      new LibroEstado(estado)
     );
 
     return this.repository.create(libro);

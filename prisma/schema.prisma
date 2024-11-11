@@ -11,6 +11,7 @@ model ctl_formato_libro {
   id          Int         @id(map: "ctl_formato_libro_pk") @default(autoincrement())
   formato     String      @db.VarChar
   manufactura String      @db.VarChar
+  estado      Boolean     @default(true)
   mnt_libro   mnt_libro[]
 }
 
@@ -18,6 +19,7 @@ model ctl_genero {
   id          Int         @id(map: "ctl_genero_pk")
   nombre      String      @db.VarChar
   descripcion String?     @db.VarChar
+  estado      Boolean     @default(true)
   mnt_libro   mnt_libro[]
 }
 
@@ -26,6 +28,7 @@ model ctl_idioma {
   idioma           String             @db.VarChar
   abreviatura      String             @db.VarChar
   region           String?            @db.VarChar
+  estado           Boolean            @default(true)
   mnt_indice_libro mnt_indice_libro[]
 }
 
@@ -34,6 +37,7 @@ model ctl_pais {
   nombre        String          @db.VarChar
   abreviacion   String          @db.VarChar
   codigo        String          @db.VarChar
+  estado        Boolean
   mnt_autor     mnt_autor[]
   mnt_editorial mnt_editorial[]
 }
@@ -41,6 +45,7 @@ model ctl_pais {
 model ctl_tipo_editorial {
   id            Int             @id(map: "ctl_tipo_editorial_pk") @default(autoincrement())
   nombre_tipo   String          @db.VarChar
+  estado        Boolean         @default(true)
   mnt_editorial mnt_editorial[]
 }
 
@@ -52,6 +57,7 @@ model mnt_autor {
   id_nacionalidad  Int
   telefono         String            @db.VarChar
   email            String            @db.VarChar
+  estado           Boolean           @default(true)
   ctl_pais         ctl_pais          @relation(fields: [id_nacionalidad], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_autor_ctl_pais_fk")
   mnt_libro_autor  mnt_libro_autor[]
 }
@@ -65,6 +71,7 @@ model mnt_editorial {
   id_tipo_editorial   Int
   sitio_web           String?               @db.VarChar
   telefono            String                @db.VarChar
+  estado              Boolean               @default(true)
   ctl_pais            ctl_pais              @relation(fields: [id_pais], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_editorial_ctl_pais_fk")
   ctl_tipo_editorial  ctl_tipo_editorial    @relation(fields: [id_tipo_editorial], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_editorial_ctl_tipo_editorial_fk")
   mnt_libro_editorial mnt_libro_editorial[]
@@ -75,6 +82,7 @@ model mnt_indice_libro {
   id_idioma      Int
   resumen        String?     @db.VarChar
   numero_paginas Int
+  estado         Boolean     @default(true)
   ctl_idioma     ctl_idioma  @relation(fields: [id_idioma], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_indice_libro_ctl_idioma_fk")
   mnt_libro      mnt_libro[]
 }
@@ -88,6 +96,7 @@ model mnt_libro {
   edicion             String                @db.VarChar
   portada             String?               @db.VarChar
   id_formato_libro    Int
+  estado              Boolean               @default(true)
   ctl_formato_libro   ctl_formato_libro     @relation(fields: [id_formato_libro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_ctl_formato_libro_fk")
   ctl_genero          ctl_genero            @relation(fields: [id_genero], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_ctl_genero_fk")
   mnt_indice_libro    mnt_indice_libro      @relation(fields: [id_indice_libro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_mnt_indice_libro_fk")

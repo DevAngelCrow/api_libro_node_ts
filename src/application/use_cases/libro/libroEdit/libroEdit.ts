@@ -2,6 +2,7 @@ import { Libro } from "../../../../domain/entities/libro/libros.entity";
 import { LibroRepository } from "../../../../domain/repositories/libro/LibroRepository";
 import {
   LibroEdicion,
+  LibroEstado,
   LibroFechaPublicacion,
   LibroGeneroId,
   LibroId,
@@ -22,7 +23,8 @@ export class LibroEdit {
     id_indice_libro: number,
     edicion: string,
     portada: string,
-    id_formato_libro: number
+    id_formato_libro: number,
+    estado: boolean
   ) : Promise<void> {
     const libro = new Libro(
       new LibroId(id),
@@ -32,7 +34,8 @@ export class LibroEdit {
       new LibroIndiceId(id_indice_libro),
       new LibroEdicion(edicion),
       new LibroPortada(portada),
-      new LibroIdFormato(id_formato_libro)
+      new LibroIdFormato(id_formato_libro),
+      new LibroEstado(estado)
     );
 
     return this.repository.update(libro);
