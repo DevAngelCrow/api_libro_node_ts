@@ -29,9 +29,9 @@ export class ImplLibroRepository implements LibroRepository {
     const { id } = libro;
 
     try {
-      if (isNaN(id.value)) {
-        throw CustomError.badRequest("Id de ser de tipo numerico");
-      }
+      // if (isNaN(id.value)) {
+      //   throw CustomError.badRequest("Id de ser de tipo numerico");
+      // }
       const prismaElement = new ConvertToPrismaData().mntLibroToPrisma(libro);
       const libroExist = await this.prisma.mnt_libro.findUnique({
         where: {
@@ -52,8 +52,8 @@ export class ImplLibroRepository implements LibroRepository {
         },
       });
     } catch (error) {
+      
       if (error instanceof CustomError) {
-        console.log("si es instancia");
         throw error;
       } else {
         throw CustomError.internalServer(

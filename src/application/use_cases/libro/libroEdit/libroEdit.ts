@@ -28,7 +28,7 @@ export class LibroEdit {
   ) : Promise<void> {
     const libro = new Libro(
       new LibroId(id),
-      new LibroNombre(nombre),
+      new LibroNombre(nombre, true),
       new LibroFechaPublicacion(fecha_publicacion),
       new LibroGeneroId(id_genero),
       new LibroIndiceId(id_indice_libro),
