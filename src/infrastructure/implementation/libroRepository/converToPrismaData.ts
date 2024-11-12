@@ -14,7 +14,7 @@ export class ConvertToPrismaData {
       numero_paginas: libro.numero_paginas.value,
       ctl_formato_libro: { connect: { id: libro.id_formato_libro.value } },
       ctl_genero: { connect: { id: libro.id_genero.value } },
-      ctl_idioma: { connect: {id: libro.id_idioma.value }}
+      ctl_idioma: { connect: {id: libro.id_idioma.value }},
     };
   }
 }

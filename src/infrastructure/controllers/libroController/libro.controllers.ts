@@ -6,7 +6,6 @@ export class LibroController {
 
   async createLibro(request: Request, response: Response) {
     const {
-      id,
       nombre,
       fecha_publicacion,
       id_genero,
@@ -20,20 +19,18 @@ export class LibroController {
     } = request.body;
 
 
-    const formato_fecha = new Date(fecha_publicacion);
-    const libro = 
+    const formato_fecha = new Date(fecha_publicacion); 
       await ServiceContainer.libro.create.run(
-        id,
         nombre,
         formato_fecha,
         id_genero,
         edicion,
         portada,
         id_formato_libro,
-        estado,
         id_idioma,
         resumen,
-        numero_paginas
+        numero_paginas,
+        estado
       )
       .then(()=> response.status(201).send({message: "Libro creado exitosamente"}))
       .catch( error => {
@@ -59,7 +56,7 @@ export class LibroController {
     const { id }  = request.params;
    
     const formato_fecha = new Date(fecha_publicacion);
-    const libro = await ServiceContainer.libro.update.run(
+    await ServiceContainer.libro.update.run(
       Number(id),
       nombre,
       formato_fecha,
@@ -85,6 +82,18 @@ export class LibroController {
     .then((res)=>{
       return response.status(200).json(res.mapToPrimitives())
     })
-    .catch(error => response.status(500).json({message: error}))
+    .catch(error => response.status(error.statusCode).json({message: error.message}))
+  }
+
+  async delete(request: Request, response: Response){
+    const { id } = request.params;
+
+    await ServiceContainer.libro.delete.run(Number(id))
+    .then(()=>{
+      return response.status(200).json({
+        message: "Libro eliminado con éxito!"
+      })
+    })
+    .catch(error => response.status(error.statusCode).json({message: error.message}))
   }
 }

@@ -1,10 +1,37 @@
 import { PrismaClient } from "@prisma/client";
 import { Libro } from "../../../domain/entities/libro/libros.entity";
 import { LibroRepository } from "../../../domain/repositories/libro/LibroRepository";
-import { LibroEdicion, LibroEstado, LibroFechaPublicacion, LibroGeneroId, LibroId, LibroIdFormato, LibroIdIdioma, LibroNombre, LibroNumeroPaginas, LibroPortada, LibroResumen } from "../../../domain/valueObject";
+import {
+  FormatoLibroEstado,
+  FormatoLibroFormato,
+  FormatoLibroId,
+  FormatoLibroManufactura,
+  GeneroDescripcion,
+  GeneroEstado,
+  GeneroId,
+  GeneroNombre,
+  IdiomaAbreviatura,
+  IdiomaEstado,
+  IdiomaId,
+  IdiomaIdioma,
+  IdiomaRegion,
+  LibroEdicion,
+  LibroEstado,
+  LibroFechaPublicacion,
+  LibroGeneroId,
+  LibroId,
+  LibroIdFormato,
+  LibroIdIdioma,
+  LibroNombre,
+  LibroNumeroPaginas,
+  LibroPortada,
+  LibroResumen,
+} from "../../../domain/valueObject";
 import { ConvertToPrismaData } from "./converToPrismaData";
 import { CustomError } from "../../../domain";
-
+import { Genero } from "../../../domain/entities/genero/genero.entity";
+import { FormatoLibro } from "../../../domain/entities/formato_libro/formatoLibro.entity";
+import { Idioma } from "../../../domain/entities/idioma/idioma.entity";
 
 type PostgresLibro = {
   id: number;
@@ -17,11 +44,11 @@ type PostgresLibro = {
   id_idioma: number;
   resumen: string;
   numero_paginas: number;
-  estado: boolean,
-  ctl_formato_libro?: {[key:string]:any},
-  ctl_genero?: {[key:string]:any},
-  ctl_idioma?: {[key:string]:any}
-}
+  estado: boolean;
+  ctl_formato_libro?: { [key: string]: any };
+  ctl_genero?: { [key: string]: any };
+  ctl_idioma?: { [key: string]: any };
+};
 export class ImplLibroRepository implements LibroRepository {
   private libros: Libro[] = [];
 
@@ -30,13 +57,10 @@ export class ImplLibroRepository implements LibroRepository {
   async create(libro: Libro): Promise<void> {
     try {
       const prismaData = new ConvertToPrismaData().mntLibroToPrisma(libro);
-      const newLibro = await this.prisma.mnt_libro.create({
+      await this.prisma.mnt_libro.create({
         data: prismaData,
       });
-      
-      
     } catch (error) {
-      
       throw CustomError.internalServer("Error interno del servidor");
     }
   }
@@ -44,59 +68,42 @@ export class ImplLibroRepository implements LibroRepository {
     return this.libros;
   }
   async getOneById(id: LibroId): Promise<Libro | null> {
-    try{
+    try {
       const libro = await this.prisma.mnt_libro.findUnique({
-        where:{
+        where: {
           id: id.value,
         },
-        include:{
+        include: {
           ctl_formato_libro: true,
           ctl_genero: true,
           ctl_idioma: true,
-        }
+        },
       });
-      
-      console.log(libro, 'este es el libro')
 
-      if(!libro){
+      if (!libro) {
         return null;
       }
-      
-      return this.mapToDomain(libro);
-          
 
-    }catch(error){
+      return this.mapToDomain(libro);
+    } catch (error) {
       throw error;
     }
   }
   async update(libro: Libro): Promise<void> {
     const { id } = libro;
-    
-    try {
-      // if (isNaN(id.value)) {
-      //   throw CustomError.badRequest("Id de ser de tipo numerico");
-      // }
-      const prismaElement = new ConvertToPrismaData().mntLibroToPrisma(libro);
-      const libroExist = await this.prisma.mnt_libro.findUnique({
-        where: {
-          id: id.value,
-        },
-      });
 
-      if (!libroExist) {
-        throw CustomError.notFound("Id no encontrado");
-      }
+    try {
+      const prismaElement = new ConvertToPrismaData().mntLibroToPrisma(libro);
 
       await this.prisma.mnt_libro.update({
         where: {
-          id: id.value,
+          id: id?.value,
         },
         data: {
           ...prismaElement,
         },
       });
     } catch (error) {
-      
       if (error instanceof CustomError) {
         throw error;
       } else {
@@ -107,13 +114,23 @@ export class ImplLibroRepository implements LibroRepository {
     }
   }
   async delete(id: LibroId): Promise<void> {
-    this.libros = this.libros.filter((libro) => libro.id.value !== id.value);
+    try {
+      await this.prisma.mnt_libro.update({
+        where: {
+          id: id?.value,
+        },
+        data: {
+          estado: false,
+        }
+      });
+    } catch (error) {
+      throw error;
+    }
+    
   }
 
   private mapToDomain(libro: PostgresLibro): Libro {
-
     return new Libro(
-      new LibroId(libro.id),
       new LibroNombre(libro.nombre),
       new LibroFechaPublicacion(libro.fecha_publicacion),
       new LibroGeneroId(libro.id_genero),
@@ -124,6 +141,26 @@ export class ImplLibroRepository implements LibroRepository {
       new LibroResumen(libro.resumen),
       new LibroNumeroPaginas(libro.numero_paginas),
       new LibroEstado(libro.estado),
-    ); 
+      new Genero(
+        new GeneroNombre(libro?.ctl_genero?.nombre),
+        new GeneroDescripcion(libro?.ctl_genero?.descripcion),
+        new GeneroEstado(libro?.ctl_genero?.estado),
+        new GeneroId(libro?.ctl_genero?.id)
+      ),
+      new FormatoLibro(
+        new FormatoLibroFormato(libro?.ctl_formato_libro?.nombre),
+        new FormatoLibroManufactura(libro?.ctl_formato_libro?.manufactura),
+        new FormatoLibroEstado(libro?.ctl_formato_libro?.estado),
+        new FormatoLibroId(libro?.ctl_formato_libro?.id)
+      ),
+      new Idioma(
+        new IdiomaIdioma(libro?.ctl_idioma?.idioma),
+        new IdiomaAbreviatura(libro?.ctl_genero?.abreviatura),
+        new IdiomaRegion(libro?.ctl_genero?.region),
+        new IdiomaEstado(libro?.ctl_genero?.estado),
+        new IdiomaId(libro?.ctl_idioma?.id)
+      ),
+      new LibroId(libro.id)
+    );
   }
 }

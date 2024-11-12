@@ -11,6 +11,7 @@ export class LibroRoutes {
         router.post('/create', controller.createLibro );
         router.put('/update/:id', controller.editLibro );
         router.get('/libro/:id', controller.getLibroById );
+        router.delete('/delete/:id', controller.delete );
         return router;
     }
 }

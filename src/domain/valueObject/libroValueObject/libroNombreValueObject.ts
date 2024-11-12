@@ -4,9 +4,7 @@ export class LibroNombre{
     constructor(
       readonly value: string,
     ){
-        
         this.noValue();
-        
         this.isMaxlengthValid();
         
     }

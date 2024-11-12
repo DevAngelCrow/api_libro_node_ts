@@ -2,6 +2,7 @@ import { CustomError } from "../../errors/custom.error";
 
 export class LibroIdFormato {
   constructor( readonly value: number ) {
+    this.required();
     this.idFormatoIsNumberValid();
   }
 
@@ -11,6 +12,14 @@ export class LibroIdFormato {
     }
     if (this.value < 0) {
       throw CustomError.badRequest(`El valor no puede ser menor a 0 ${this.value} formato`);
+    }
+  }
+
+  private required() {
+    if (!this.value) {
+      throw CustomError.badRequest(
+        "El campo id_formato_libro es requerido"
+      );
     }
   }
 }
