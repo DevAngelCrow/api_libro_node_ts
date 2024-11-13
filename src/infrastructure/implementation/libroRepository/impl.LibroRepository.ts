@@ -84,6 +84,7 @@ export class ImplLibroRepository implements LibroRepository {
     }
   }
   async getOneById(id: LibroId): Promise<Libro | null> {
+    console.log("console.log del getOneById");
     try {
       const libro = await this.prisma.mnt_libro.findUnique({
         where: {
@@ -137,12 +138,11 @@ export class ImplLibroRepository implements LibroRepository {
         },
         data: {
           estado: false,
-        }
+        },
       });
     } catch (error) {
       throw error;
     }
-    
   }
 
   async createUrlPortada(portada: Express.Multer.File): Promise<LibroPortada> {
