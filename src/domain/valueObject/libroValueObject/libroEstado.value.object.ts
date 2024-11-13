@@ -15,7 +15,7 @@ export class LibroEstado {
   }
 
   private required() {
-    if (!this.value) {
+    if (this.value === undefined || this.value === null) {
       throw CustomError.badRequest("El campo estado es requerido");
     }
   }
