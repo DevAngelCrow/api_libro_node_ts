@@ -6,7 +6,6 @@ import {
   LibroEstado,
   LibroFechaPublicacion,
   LibroGeneroId,
-  LibroId,
   LibroIdFormato,
   LibroIdIdioma,
   LibroNombre,
@@ -23,20 +22,23 @@ export class LibroCreate {
     fecha_publicacion: Date,
     id_genero: number,
     edicion: string,
-    portada: string,
+    portada: Express.Multer.File,
     id_formato_libro: number,
     id_idioma: number,
     resumen: string,
     numero_paginas: number,
     estado: boolean,
-    
   ): Promise<void> {
+    console.log(portada, 'portada en el caso de uso Create')
+    const urlImagenPortada = await this.repository.createUrlPortada(portada)
+    
+    
     const libro = new Libro(
       new LibroNombre(nombre),
       new LibroFechaPublicacion(fecha_publicacion),
       new LibroGeneroId(id_genero),
       new LibroEdicion(edicion),
-      new LibroPortada(portada),
+      new LibroPortada(urlImagenPortada.value),
       new LibroIdFormato(id_formato_libro),
       new LibroIdIdioma(id_idioma),
       new LibroResumen(resumen),

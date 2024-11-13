@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { ServiceContainer } from "../../../../shared/infraestructure/ServiceContainer";
+import { ServiceContainer } from "../../../shared/infraestructure/ServiceContainer";
+
 
 
 export class LibroController {
@@ -15,10 +16,9 @@ export class LibroController {
       estado,
       id_idioma,
       resumen,
-      numero_paginas
+      numero_paginas,
     } = request.body;
-
-
+    console.log(request.file, 'así va portada')
     const formato_fecha = new Date(fecha_publicacion); 
       await ServiceContainer.libro.create.run(
         nombre,
@@ -30,7 +30,7 @@ export class LibroController {
         id_idioma,
         resumen,
         numero_paginas,
-        estado
+        estado,
       )
       .then(()=> response.status(201).send({message: "Libro creado exitosamente"}))
       .catch( error => {
@@ -50,7 +50,7 @@ export class LibroController {
       estado,
       id_idioma,
       resumen,
-      numero_paginas
+      numero_paginas,
     } = request.body;
 
     const { id }  = request.params;
@@ -95,5 +95,22 @@ export class LibroController {
       })
     })
     .catch(error => response.status(error.statusCode).json({message: error.message}))
+  }
+
+  async getAllLibros(request: Request, response: Response){
+    await ServiceContainer.libro.getAll.run()
+    .then((res)=>{
+      return response.json(res.map((libro) => libro.mapToPrimitives())).status(200)
+    })
+    .catch(error => response.status(error.statusCode).json({message: error.message}))
+  }
+
+  async createUrlPortada(request: Request, response: Response){
+    const { file } = request.body;
+    console.log(request.body, 'el body en el controlador')
+    await ServiceContainer.libro.createUrlPortada.run(file)
+    .then(() => {
+      return response.send(`File received: ${request.file}`)
+    })
   }
 }

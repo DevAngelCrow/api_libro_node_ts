@@ -1,5 +1,5 @@
 import { Libro } from "../../entities/libro/libros.entity";
-import { LibroId } from "../../valueObject";
+import { LibroId, LibroPortada } from "../../valueObject";
 
 export interface LibroRepository {
     create(libro: Libro): Promise<void>;
@@ -7,4 +7,5 @@ export interface LibroRepository {
     getOneById(id: LibroId): Promise<Libro | null>;
     update(libro: Libro): Promise<void>;
     delete(id: LibroId): Promise<void>;
+    createUrlPortada(libro: Express.Multer.File) : Promise<LibroPortada>
 }

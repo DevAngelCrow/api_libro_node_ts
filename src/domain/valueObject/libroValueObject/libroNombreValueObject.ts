@@ -8,7 +8,7 @@ export class LibroNombre{
         this.isMaxlengthValid();
         
     }
-
+    
     private noValue(){
         if(!this.value){
             throw CustomError.badRequest("El campo nombre es obligatorio");

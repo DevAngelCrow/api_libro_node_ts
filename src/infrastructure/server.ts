@@ -1,4 +1,5 @@
 import express, { Router } from 'express';
+import multer from 'multer';
 import path from 'path';
 
 interface Options{
@@ -26,7 +27,9 @@ export class Server{
         this.app.use(express.json());
 
         //este middleware nos sirve para aceptar y enviar en las peticiones https data por medio de x-www-form-urlencoded
-        this.app.use(express.urlencoded({extended: true}))
+        this.app.use(express.urlencoded({extended: true}));
+        // const upload = multer({dest: 'uploads/'})
+        // this.app.use(upload.single(this.routes));
 
         //Public folder
         this.app.use(express.static(this.publicPath));

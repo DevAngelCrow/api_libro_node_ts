@@ -3,13 +3,12 @@ import { CustomError } from "../../errors/custom.error";
 export class LibroId{
     constructor(
          readonly value?: number){
-            console.log(this.value, 'valor')
-            this.idIsNumberValid();
+            //this.idIsNumberValid();
         }
 
     private idIsNumberValid(){
+        console.log('llegue hasta aca ', this.value)
         if(this.value){
-            
             if(isNaN(this.value)){
                 throw  CustomError.badRequest(`El valor del id no es valido`);
             }

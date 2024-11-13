@@ -32,6 +32,7 @@ import { CustomError } from "../../../domain";
 import { Genero } from "../../../domain/entities/genero/genero.entity";
 import { FormatoLibro } from "../../../domain/entities/formato_libro/formatoLibro.entity";
 import { Idioma } from "../../../domain/entities/idioma/idioma.entity";
+import drive from "../../config/googleDrive";
 
 type PostgresLibro = {
   id: number;
@@ -65,7 +66,22 @@ export class ImplLibroRepository implements LibroRepository {
     }
   }
   async getAll(): Promise<Libro[]> {
-    return this.libros;
+    try{
+      const librosBd = await this.prisma.mnt_libro.findMany({
+        include:{
+          ctl_formato_libro: true,
+          ctl_genero: true,
+          ctl_idioma: true,
+        } 
+      });
+     
+      
+      this.libros = librosBd.map((libro)=>{ return this.mapToDomain(libro)})
+      return this.libros;
+    }catch(error){
+      throw CustomError.internalServer('Error interno del servidor')
+      
+    }
   }
   async getOneById(id: LibroId): Promise<Libro | null> {
     try {
@@ -86,7 +102,7 @@ export class ImplLibroRepository implements LibroRepository {
 
       return this.mapToDomain(libro);
     } catch (error) {
-      throw error;
+      throw CustomError.internalServer('Error interno del servidor');
     }
   }
   async update(libro: Libro): Promise<void> {
@@ -127,6 +143,44 @@ export class ImplLibroRepository implements LibroRepository {
       throw error;
     }
     
+  }
+
+  async createUrlPortada(portada: Express.Multer.File): Promise<LibroPortada> {
+    try{
+      console.log(portada, 'portada')
+      const { buffer, originalname, mimetype } = portada;
+      const folderId = [];
+      folderId.push(process.env.FOLDER_ID!);
+
+      const fileMetadata = {
+        name: originalname,
+        parents: folderId,
+      };
+      const media = {
+        mimeType: mimetype,
+        body: Buffer.from(buffer),
+      }
+
+      const urlPortada = await drive.files.create({
+        requestBody: fileMetadata,
+        media,
+        fields: 'id',
+      });
+
+      const fileId = urlPortada.data.id;
+      await drive.permissions.create({
+        fileId: fileId!,
+        requestBody: {
+          role: 'reader',
+          type: 'anyone'
+        }
+      });
+      const imageUrl = `https://drive.google.com/uc?id=${fileId}`;
+      return new LibroPortada(/*'prueba'*/imageUrl); 
+    }catch(error){
+      console.log(error, 'error create portada')
+      throw error;
+    }
   }
 
   private mapToDomain(libro: PostgresLibro): Libro {
