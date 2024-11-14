@@ -6,30 +6,32 @@ import { ServiceContainer } from "../../../shared/infraestructure/ServiceContain
 export class LibroController {
 
   async createLibro(request: Request, response: Response) {
-    const {
-      nombre,
-      fecha_publicacion,
-      id_genero,
-      edicion,
-      portada,
-      id_formato_libro,
-      estado,
-      id_idioma,
-      resumen,
-      numero_paginas,
-    } = request.body;
-    console.log(request.file, 'así va portada')
+    
+      const {
+        nombre,
+        fecha_publicacion,
+        id_genero,
+        edicion,
+        id_formato_libro,
+        estado,
+        id_idioma,
+        resumen,
+        numero_paginas,
+      } = request.body;
+
+      const portada = request.file!;
+   
     const formato_fecha = new Date(fecha_publicacion); 
       await ServiceContainer.libro.create.run(
         nombre,
         formato_fecha,
-        id_genero,
+        Number(id_genero),
         edicion,
         portada,
-        id_formato_libro,
-        id_idioma,
+        Number(id_formato_libro),
+        Number(id_idioma),
         resumen,
-        numero_paginas,
+        Number(numero_paginas),
         estado,
       )
       .then(()=> response.status(201).send({message: "Libro creado exitosamente"}))
@@ -106,11 +108,13 @@ export class LibroController {
   }
 
   async createUrlPortada(request: Request, response: Response){
+    await console.log(request.body, 'request.body en createUrlPortada');
     const { file } = request.body;
-    console.log(request.body, 'el body en el controlador')
+    
     await ServiceContainer.libro.createUrlPortada.run(file)
-    .then(() => {
-      return response.send(`File received: ${request.file}`)
+    .then((res) => {
+      return console.log(res)
     })
+    .catch(error => response.status(error.statusCode).json({message: error.message}))
   }
 }

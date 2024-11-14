@@ -33,6 +33,7 @@ import { Genero } from "../../../domain/entities/genero/genero.entity";
 import { FormatoLibro } from "../../../domain/entities/formato_libro/formatoLibro.entity";
 import { Idioma } from "../../../domain/entities/idioma/idioma.entity";
 import drive from "../../config/googleDrive";
+import { Readable } from "stream";
 
 type PostgresLibro = {
   id: number;
@@ -62,6 +63,7 @@ export class ImplLibroRepository implements LibroRepository {
         data: prismaData,
       });
     } catch (error) {
+      console.log(error, 'error en createLibro')
       throw CustomError.internalServer("Error interno del servidor");
     }
   }
@@ -147,22 +149,24 @@ export class ImplLibroRepository implements LibroRepository {
 
   async createUrlPortada(portada: Express.Multer.File): Promise<LibroPortada> {
     try{
-      console.log(portada, 'portada')
+      
+      
       const { buffer, originalname, mimetype } = portada;
+      
       const folderId = [];
       folderId.push(process.env.FOLDER_ID!);
-
-      const fileMetadata = {
+      const stream = Readable.from(buffer);
+      const requestBody = {
         name: originalname,
-        parents: folderId,
+        fields: folderId,
       };
       const media = {
         mimeType: mimetype,
-        body: Buffer.from(buffer),
+        body: stream,
       }
 
       const urlPortada = await drive.files.create({
-        requestBody: fileMetadata,
+        requestBody: requestBody,
         media,
         fields: 'id',
       });
@@ -176,10 +180,10 @@ export class ImplLibroRepository implements LibroRepository {
         }
       });
       const imageUrl = `https://drive.google.com/uc?id=${fileId}`;
-      return new LibroPortada(/*'prueba'*/imageUrl); 
+      return new LibroPortada(imageUrl); 
     }catch(error){
-      console.log(error, 'error create portada')
-      throw error;
+      
+      throw CustomError.internalServer('Error en la peticion de google Drive');
     }
   }
 
