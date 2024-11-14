@@ -29,9 +29,9 @@ export class LibroCreate {
     numero_paginas: number,
     estado: boolean,
   ): Promise<void> {
-
+    
     const urlImagenPortada = await this.repository.createUrlPortada(portada)
-    console.log(urlImagenPortada, 'portada')
+    
     if(typeof estado === 'string' && estado === 'true'){
       estado = true;
     }else{ estado = false}

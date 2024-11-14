@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ServiceContainer } from "../../../shared/infraestructure/ServiceContainer";
+import { Readable } from "stream";
 
 
 
@@ -108,13 +109,22 @@ export class LibroController {
   }
 
   async createUrlPortada(request: Request, response: Response){
-    await console.log(request.body, 'request.body en createUrlPortada');
     const { file } = request.body;
-    
     await ServiceContainer.libro.createUrlPortada.run(file)
     .then((res) => {
       return console.log(res)
     })
     .catch(error => response.status(error.statusCode).json({message: error.message}))
   }
+
+  async getImageFile(request: Request, response: Response){
+    const id = request.query.id!;
+    const index = id.toString().indexOf("id=");
+    const parametro = id.toString().substring(index + 3, id.toString().length);
+    await ServiceContainer.libro.getImageFile.run(parametro)
+    .then((res) => {  return response.set("Content-type", "image/jpeg").send(res)})
+    .catch(error => response.json({message: error.message}))
+  }
+  
+  
 }

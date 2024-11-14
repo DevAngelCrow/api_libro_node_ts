@@ -15,6 +15,7 @@ export class LibroRoutes {
         router.delete('/delete/:id', controller.delete );
         router.get('/libros/listado', controller.getAllLibros);
         router.post('/upload/portada', controller.createUrlPortada);
+        router.get('/get/image/libro', upload.single("image"),controller.getImageFile);
         return router;
     }
 }

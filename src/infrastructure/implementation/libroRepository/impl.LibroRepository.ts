@@ -34,6 +34,7 @@ import { FormatoLibro } from "../../../domain/entities/formato_libro/formatoLibr
 import { Idioma } from "../../../domain/entities/idioma/idioma.entity";
 import drive from "../../config/googleDrive";
 import { Readable } from "stream";
+import fs from 'fs'
 
 type PostgresLibro = {
   id: number;
@@ -63,7 +64,6 @@ export class ImplLibroRepository implements LibroRepository {
         data: prismaData,
       });
     } catch (error) {
-      console.log(error, 'error en createLibro')
       throw CustomError.internalServer("Error interno del servidor");
     }
   }
@@ -86,7 +86,6 @@ export class ImplLibroRepository implements LibroRepository {
     }
   }
   async getOneById(id: LibroId): Promise<Libro | null> {
-    console.log("console.log del getOneById");
     try {
       const libro = await this.prisma.mnt_libro.findUnique({
         where: {
@@ -158,7 +157,7 @@ export class ImplLibroRepository implements LibroRepository {
       const stream = Readable.from(buffer);
       const requestBody = {
         name: originalname,
-        fields: folderId,
+        parents: [process.env.FOLDER_ID!],
       };
       const media = {
         mimeType: mimetype,
@@ -182,9 +181,39 @@ export class ImplLibroRepository implements LibroRepository {
       const imageUrl = `https://drive.google.com/uc?id=${fileId}`;
       return new LibroPortada(imageUrl); 
     }catch(error){
-      
       throw CustomError.internalServer('Error en la peticion de google Drive');
     }
+  }
+
+  async getImgPortada(urlPortada: string): Promise<Buffer> {
+    try {
+      const imgFile  = await drive.files.get(
+        {fileId: urlPortada, alt:'media'},
+        { responseType: 'stream'}
+      );
+      const valorStream : Buffer  = await this.readStream(imgFile.data);
+      return valorStream;
+    } catch (error) {
+      throw error
+    }
+    
+  }
+
+  private readStream(stream: Readable) : Promise<Buffer>{
+    let data : Buffer[] = []
+      return new Promise((resolve, reject) => {
+        stream.on('data', (chunk: Buffer) => {
+          data.push(chunk);
+        })
+        .on('end', () => {
+          const buffer = Buffer.concat(data);
+          resolve(buffer);
+        })
+        .on('error', (err : Error) =>{
+          reject(err)
+        })
+      })
+      
   }
 
   private mapToDomain(libro: PostgresLibro): Libro {
