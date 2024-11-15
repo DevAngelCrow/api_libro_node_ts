@@ -34,7 +34,7 @@ import { FormatoLibro } from "../../../domain/entities/formato_libro/formatoLibr
 import { Idioma } from "../../../domain/entities/idioma/idioma.entity";
 import drive from "../../config/googleDrive";
 import { Readable } from "stream";
-import fs from 'fs'
+import { LibroPortadaMultimedia } from "../../../domain/valueObject/libroValueObject/libroPortadaMultimedia.value.object";
 
 type PostgresLibro = {
   id: number;
@@ -68,21 +68,21 @@ export class ImplLibroRepository implements LibroRepository {
     }
   }
   async getAll(): Promise<Libro[]> {
-    try{
+    try {
       const librosBd = await this.prisma.mnt_libro.findMany({
-        include:{
+        include: {
           ctl_formato_libro: true,
           ctl_genero: true,
           ctl_idioma: true,
-        } 
+        },
       });
-     
-      
-      this.libros = librosBd.map((libro)=>{ return this.mapToDomain(libro)})
+
+      this.libros = librosBd.map((libro) => {
+        return this.mapToDomain(libro);
+      });
       return this.libros;
-    }catch(error){
-      throw CustomError.internalServer('Error interno del servidor')
-      
+    } catch (error) {
+      throw CustomError.internalServer("Error interno del servidor");
     }
   }
   async getOneById(id: LibroId): Promise<Libro | null> {
@@ -102,9 +102,17 @@ export class ImplLibroRepository implements LibroRepository {
         return null;
       }
 
-      return this.mapToDomain(libro);
+      const portadaBuffer = await this.getImgPortada(libro.portada);
+
+      if (!portadaBuffer) {
+        throw CustomError.internalServer(
+          "Ocurrio un problema al obtener la imagen de Google Drive"
+        );
+      }
+
+      return this.mapToDomain(libro, portadaBuffer);
     } catch (error) {
-      throw CustomError.internalServer('Error interno del servidor');
+      throw CustomError.internalServer("Error interno del servidor");
     }
   }
   async update(libro: Libro): Promise<void> {
@@ -122,6 +130,7 @@ export class ImplLibroRepository implements LibroRepository {
         },
       });
     } catch (error) {
+      console.log(error);
       if (error instanceof CustomError) {
         throw error;
       } else {
@@ -147,11 +156,9 @@ export class ImplLibroRepository implements LibroRepository {
   }
 
   async createUrlPortada(portada: Express.Multer.File): Promise<LibroPortada> {
-    try{
-      
-      
+    try {
       const { buffer, originalname, mimetype } = portada;
-      
+
       const folderId = [];
       folderId.push(process.env.FOLDER_ID!);
       const stream = Readable.from(buffer);
@@ -162,61 +169,114 @@ export class ImplLibroRepository implements LibroRepository {
       const media = {
         mimeType: mimetype,
         body: stream,
-      }
+      };
 
       const urlPortada = await drive.files.create({
         requestBody: requestBody,
         media,
-        fields: 'id',
+        fields: "id",
       });
 
-      const fileId = urlPortada.data.id;
+      const fileId = await urlPortada.data.id;
       await drive.permissions.create({
         fileId: fileId!,
         requestBody: {
-          role: 'reader',
-          type: 'anyone'
-        }
+          role: "reader",
+          type: "anyone",
+        },
       });
       const imageUrl = `https://drive.google.com/uc?id=${fileId}`;
-      return new LibroPortada(imageUrl); 
-    }catch(error){
-      throw CustomError.internalServer('Error en la peticion de google Drive');
+      return new LibroPortada(imageUrl);
+    } catch (error) {
+      throw CustomError.internalServer("Error en la peticion de google Drive");
     }
   }
 
   async getImgPortada(urlPortada: string): Promise<Buffer> {
     try {
-      const imgFile  = await drive.files.get(
-        {fileId: urlPortada, alt:'media'},
-        { responseType: 'stream'}
+      const index: number = urlPortada.toString().indexOf("id=");
+      let parametro: string = urlPortada;
+      if (index !== -1) {
+        parametro = urlPortada.substring(
+          index + 3,
+          urlPortada.toString().length
+        );
+      }
+      const imgFile = await drive.files.get(
+        { fileId: parametro, alt: "media" },
+        { responseType: "stream" }
       );
-      const valorStream : Buffer  = await this.readStream(imgFile.data);
+      const valorStream: Buffer = await this.readStream(imgFile.data);
       return valorStream;
     } catch (error) {
-      throw error
+      throw error;
     }
-    
   }
 
-  private readStream(stream: Readable) : Promise<Buffer>{
-    let data : Buffer[] = []
-      return new Promise((resolve, reject) => {
-        stream.on('data', (chunk: Buffer) => {
+  async editImgPortada(
+    id: string,
+    archivo: Express.Multer.File
+  ): Promise<LibroPortada> {
+    try {
+      const index: number = id.indexOf("id=");
+      const parametro = id.substring(index + 3, id.length);
+      const { buffer, originalname, mimetype } = archivo;
+
+      const stream = Readable.from(buffer);
+      const requestBody = {
+        name: originalname,
+      };
+
+      const media = {
+        mimeType: mimetype,
+        body: stream,
+      };
+      const urlPortadaEdit = await drive.files.update({
+        fileId: parametro,
+        requestBody,
+        media,
+      });
+
+      const fileId = await urlPortadaEdit.data.id;
+      await drive.permissions.create({
+        fileId: fileId!,
+        requestBody: {
+          role: "reader",
+          type: "anyone",
+        },
+      });
+
+      const imagenUrlEdit = `https://drive.google.com/uc?id=${fileId}`;
+
+      return new LibroPortada(imagenUrlEdit);
+    } catch (error) {
+      console.log(error);
+      throw CustomError.internalServer(
+        "Error al editar la imagen multimedia en Google Drive"
+      );
+    }
+  }
+  private readStream(stream: Readable): Promise<Buffer> {
+    let data: Buffer[] = [];
+    return new Promise((resolve, reject) => {
+      stream
+        .on("data", (chunk: Buffer) => {
           data.push(chunk);
         })
-        .on('end', () => {
+        .on("end", () => {
           const buffer = Buffer.concat(data);
           resolve(buffer);
         })
-        .on('error', (err : Error) =>{
-          reject(err)
-        })
-      })
-      
+        .on("error", (err: Error) => {
+          reject(err);
+        });
+    });
   }
 
-  private mapToDomain(libro: PostgresLibro): Libro {
+  private mapToDomain(
+    libro: PostgresLibro,
+    portada_multimedia?: Buffer
+  ): Libro {
     return new Libro(
       new LibroNombre(libro.nombre),
       new LibroFechaPublicacion(libro.fecha_publicacion),
@@ -247,7 +307,10 @@ export class ImplLibroRepository implements LibroRepository {
         new IdiomaEstado(libro?.ctl_genero?.estado),
         new IdiomaId(libro?.ctl_idioma?.id)
       ),
-      new LibroId(libro.id)
+      new LibroId(libro.id),
+      portada_multimedia
+        ? new LibroPortadaMultimedia(portada_multimedia)
+        : undefined
     );
   }
 }

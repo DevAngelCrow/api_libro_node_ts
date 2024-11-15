@@ -1,5 +1,5 @@
 import { Readable } from "stream";
-import { LibroRepository } from "../../../../domain/repositories/libro/LibroRepository";
+import { LibroRepository } from "../../../../domain/repositories/index";
 
 export class LibroGetFileImage{
     constructor(private repository: LibroRepository){}

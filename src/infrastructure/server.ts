@@ -1,5 +1,4 @@
 import express, { Router } from 'express';
-import multer from 'multer';
 import path from 'path';
 
 interface Options{
@@ -24,7 +23,7 @@ export class Server{
 
     async start(){
         //este middleware nos sirve para poder aceptar y enviar en las peticiones https data que pueda ser consumible
-        this.app.use(express.json());
+        this.app.use(express.json({limit: '100mb'}));
 
         //este middleware nos sirve para aceptar y enviar en las peticiones https data por medio de x-www-form-urlencoded
         this.app.use(express.urlencoded({extended: true}));

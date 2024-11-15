@@ -1,6 +1,6 @@
 
 import { Libro } from "../../../../domain/entities/libro/libros.entity";
-import { LibroRepository } from "../../../../domain/repositories/libro/LibroRepository";
+import { LibroRepository } from "../../../../domain/repositories/index";
 import {
   LibroEdicion,
   LibroEstado,

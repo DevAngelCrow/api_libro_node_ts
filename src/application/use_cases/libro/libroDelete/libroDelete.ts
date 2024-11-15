@@ -1,6 +1,6 @@
 import { CustomError } from "../../../../domain";
-import { LibroRepository } from "../../../../domain/repositories/libro/LibroRepository";
-import { LibroFechaPublicacion, LibroId, LibroNombre } from "../../../../domain/valueObject";
+import { LibroRepository } from "../../../../domain/repositories/index";
+import { LibroId } from "../../../../domain/valueObject";
 
 export class LibroDelete {
     constructor (private repository: LibroRepository){}

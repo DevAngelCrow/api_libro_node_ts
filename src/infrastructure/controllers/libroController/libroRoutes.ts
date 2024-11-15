@@ -16,6 +16,7 @@ export class LibroRoutes {
         router.get('/libros/listado', controller.getAllLibros);
         router.post('/upload/portada', controller.createUrlPortada);
         router.get('/get/image/libro', upload.single("image"),controller.getImageFile);
+        router.put('/update/portada/image', upload.single("archivo"), controller.putImageFile );
         return router;
     }
 }

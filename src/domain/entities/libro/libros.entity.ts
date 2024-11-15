@@ -9,7 +9,8 @@ import {
   LibroEstado,
   LibroIdIdioma,
   LibroResumen,
-  LibroNumeroPaginas
+  LibroNumeroPaginas,
+  LibroPortadaMultimedia
 } from "../../valueObject";
 import { DateTime } from "luxon";
 import { Genero } from "../genero/genero.entity";
@@ -31,6 +32,7 @@ export class Libro {
     readonly ctl_formato_libro?: FormatoLibro,
     readonly ctl_idioma?: Idioma,
     readonly id?: LibroId,
+    readonly portada_multimedia?: LibroPortadaMultimedia
   ) {
   }
 
@@ -48,6 +50,7 @@ export class Libro {
     resumen: this.resumen.value,
     numero_paginas: this.numero_paginas.value,
     estado: this.estado?.value,
+    portada_multimedia: this.portada_multimedia?.value 
     }
   }
 

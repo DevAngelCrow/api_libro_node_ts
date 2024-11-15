@@ -1,6 +1,6 @@
 import { CustomError } from "../../../../domain";
 import { Libro } from "../../../../domain/entities/libro/libros.entity";
-import { LibroRepository } from "../../../../domain/repositories/libro/LibroRepository";
+import { LibroRepository } from "../../../../domain/repositories/index";
 import {
   LibroEdicion,
   LibroEstado,
@@ -12,8 +12,9 @@ import {
   LibroPortada,
   LibroIdIdioma,
   LibroResumen,
-  LibroNumeroPaginas
+  LibroNumeroPaginas,
 } from "../../../../domain/valueObject";
+import { LibroPortadaMultimedia } from "../../../../domain/valueObject/libroValueObject/libroPortadaMultimedia.value.object";
 
 export class LibroEdit {
   constructor(private repository: LibroRepository) {}
@@ -30,10 +31,9 @@ export class LibroEdit {
     id_idioma: number,
     resumen: string,
     numero_paginas: number,
-  ) : Promise<void> {
-    
+    portada_multimedia: Buffer,
+  ): Promise<void> {
     const libro = new Libro(
-      
       new LibroNombre(nombre),
       new LibroFechaPublicacion(fecha_publicacion),
       new LibroGeneroId(id_genero),
@@ -43,13 +43,17 @@ export class LibroEdit {
       new LibroIdIdioma(id_idioma),
       new LibroResumen(resumen),
       new LibroNumeroPaginas(numero_paginas),
-      new LibroEstado(estado), undefined, undefined, undefined,
+      new LibroEstado(estado),
+      undefined,
+      undefined,
+      undefined,
       new LibroId(id),
+      new LibroPortadaMultimedia(portada_multimedia)
     );
 
     const libroExist = await this.repository.getOneById(libro.id!);
-    
-    if(!libroExist){
+
+    if (!libroExist) {
       throw CustomError.notFound("Libro no encontrado");
     }
 

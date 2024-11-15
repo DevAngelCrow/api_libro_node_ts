@@ -9,4 +9,5 @@ export interface LibroRepository {
     delete(id: LibroId): Promise<void>;
     createUrlPortada(libro: Express.Multer.File) : Promise<LibroPortada>;
     getImgPortada(urlPortada: string):Promise<Buffer>;
+    editImgPortada(id: string, archivo: Express.Multer.File):Promise<LibroPortada>
 }
