@@ -11,3 +11,8 @@ export * from './libro/libroGetAll/libroGetAll';
 export * from './libro/libroGetFileImage/libroGetFileImage';
 export * from './libro/libroGetOneById/libroGetOneById';
 export * from './libro/libroImagenUrlCreate/libroImagenUrlCreate';
+export * from './editorial/editorialCreate/editorialCreate';
+export * from './editorial/editorialGetOneById/editorialGetOneById';
+export * from './editorial/editorialDelete/editorialDelete';
+export * from './editorial/editorialEdit/editorialEdit';
+export * from './editorial/editorialGetAll/editorialGetAll';

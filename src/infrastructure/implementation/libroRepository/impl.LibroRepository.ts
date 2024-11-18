@@ -35,6 +35,7 @@ import { Idioma } from "../../../domain/entities/idioma/idioma.entity";
 import drive from "../../config/googleDrive";
 import { Readable } from "stream";
 import { LibroPortadaMultimedia } from "../../../domain/valueObject/libroValueObject/libroPortadaMultimedia.value.object";
+import { DateTime } from "luxon";
 
 type PostgresLibro = {
   id: number;
@@ -52,24 +53,12 @@ type PostgresLibro = {
   ctl_genero?: { [key: string]: any };
   ctl_idioma?: { [key: string]: any };
 };
-
-type AutorCreate = {
-  id_libro: number;
-  id_autor: number;
-  existeAutor: boolean;
-}[];
-
-type AutoresUpdate = {
-  id: number;
-  id_libro: number;
-  id_autor: number;
-  existeAutor: boolean;
-  estado: boolean;
-}[];
 export class ImplLibroRepository implements LibroRepository {
   private libros: Libro[] = [];
 
   private prisma = new PrismaClient();
+
+  private dt = DateTime;
 
   async create(libro: Libro): Promise<void> {
     try {
@@ -176,90 +165,64 @@ export class ImplLibroRepository implements LibroRepository {
         where: {
           id_libro: id,
         },
+        select: {
+          id: true,
+          id_libro: true,
+          id_autor: true,
+          estado: true,
+        },
       });
 
+      const idsExistentes = new Set(libros.map((libro) => libro.id_autor));
+
+      //este arreglo almacenará los autores que ya estan asociados pero que seran desactivados del libro.
+      const autoresADesactivar = libros.filter(
+        (libro) => !idAutores.includes(libro.id_autor)
+      );
+
+      //este arreglo almacenará los autores que ya estan asociados pero que seran activados del libro
+      const autoresReactivar = libros.filter(
+        (libro) => idAutores.includes(libro.id_autor) && libro.estado === false
+      );
       //este arreglo almacenara los autores que nunca han sido asociados a un libro.
-      const autoresNuevos: AutorCreate = [];
+      const autoresNuevos = idAutores.filter(
+        (idAutor) => !idsExistentes.has(idAutor)
+      );
 
-      //este arreglo almacenara los autores que se actualizaran en la consulta
-      const autoresActualizar: AutoresUpdate = [];
-
-      //comparamos que cada uno de los id del arreglo de idAutores si existan en los id de la consulta
-      //del libro en consideracion, si no, pues este sera creado
-      //ya que nunca ha sido asociado a este libro en consideracion y los pushamos al arreglo de autoresNuevos
-
-      idAutores.forEach((id_autor) => {
-        const existe = libros.some((autor) => autor.id_autor === id_autor);
-        if (!existe) {
-          autoresNuevos.push({
+      if (autoresADesactivar.length) {
+        await tx.mnt_libro_autor.updateMany({
+          where: {
             id_libro: id,
-            id_autor: id_autor,
-            existeAutor: !existe,
-          });
-        }
-      });
-
-      //comparamos que cada uno de los id del arreglo de la consulta libros existan en el arreglo
-      //de idAutores, por lo que el que no exista o no cumpla con la condicion se procedera a actualizar
-      //es es diferente al caso de create debido a que se esta comparando cada uno del elemento libro contra
-      //los id que el cliente proporciono
-      libros.forEach((libro) => {
-        const existe = idAutores.some((autor) => {
-          return autor === libro.id_autor;
+            id_autor: { in: autoresADesactivar.map((autor) => autor.id_autor) },
+          },
+          data: {
+            estado: false,
+            updated_at: new Date(Date.now()),
+          },
         });
-        if (!existe) {
-          autoresActualizar.push({
-            id: libro.id,
-            id_libro: id,
-            id_autor: libro.id_autor,
-            existeAutor: libro.estado,
-            estado: libro.estado,
-          });
-        }
-      });
+      }
 
-      //si fuera el caso en el que los mismos datos que fueron enviados por el cliente coinciden con el
-      //arreglo de libros procedemos a hacer una segunda validacion, siempre y cuando no existan nuevos registros de autor o
-      //que el arreglo de autores a actualizar este vacio posterior en primer validacion
-      if (!autoresNuevos.length || !autoresActualizar.length) {
-        libros.forEach((libro) => {
-          const existe = idAutores.some((autor) => {
-            return autor === libro.id_autor && libro.estado === false;
-          });
-          if (existe) {
-            autoresActualizar.push({
-              id: libro.id,
-              id_libro: id,
-              id_autor: libro.id_autor,
-              existeAutor: libro.estado,
-              estado: libro.estado,
-            });
-          }
+      if (autoresReactivar.length) {
+        await tx.mnt_libro_autor.updateMany({
+          where: {
+            id_libro: id,
+            id_autor: { in: autoresReactivar.map((autor) => autor.id_autor) },
+          },
+          data: { estado: true, updated_at: new Date(Date.now()) },
         });
       }
 
       if (autoresNuevos.length) {
-        const nuevosRegistros = autoresNuevos.map((autor) => {
-          return {
-            id_libro: autor.id_libro,
-            id_autor: autor.id_autor,
-          };
-        });
+        const nuevosRegistros = autoresNuevos.map((idAutor) => ({
+          id_libro: id,
+          id_autor: idAutor,
+          estado: true,
+        }));
+
         await tx.mnt_libro_autor.createMany({
           data: nuevosRegistros,
         });
       }
-
-      autoresActualizar.forEach(async (autor) => {
-        await tx.mnt_libro_autor.update({
-          where: {
-            id: autor.id,
-          },
-          data: {
-            estado: !autor.estado,
-          },
-        });
-      });
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -282,7 +245,7 @@ export class ImplLibroRepository implements LibroRepository {
         },
       });
     } catch (error) {
-      throw error;
+      throw CustomError.internalServer("Error interno del servidor");
     }
   }
 

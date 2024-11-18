@@ -9,7 +9,9 @@ export class AutorRoutes{
 
         router.post('/create', controller.createAutor );
         router.get('/:id', controller.getOneById);
-        router.get('/autores/listado', controller.getAllAutores)
+        router.get('/autores/listado', controller.getAllAutores);
+        router.put('/update/:id', controller.putAutor);
+        router.delete('/delete/:id', controller.deleteAutor )
 
         return router;
     }

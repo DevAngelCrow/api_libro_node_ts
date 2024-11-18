@@ -8,6 +8,7 @@ import {
   AutorIdNacionalidad,
   AutorNombres,
   AutorTelefono,
+  AutorLibros
 } from "../../valueObject";
 
 import { Pais } from "../index";
@@ -22,7 +23,8 @@ export class Autor {
     readonly email: AutorEmail,
     readonly estado?: AutorEstado,
     readonly id?: AutorId,
-    readonly ctl_nacionalidad?: Pais
+    readonly ctl_nacionalidad?: Pais,
+    readonly libros?: AutorLibros
   ) {}
 
 

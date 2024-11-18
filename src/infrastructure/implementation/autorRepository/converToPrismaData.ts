@@ -13,6 +13,11 @@ export class ConvertToPrismaData {
       ctl_pais: {
         connect: { id: autor.id_nacionalidad.value },
       },
+      mnt_libro_autor: {
+        create: autor.libros?.value.map((libro) => ({
+          mnt_libro: { connect: { id: +libro}}
+        }))
+      }
     };
   }
 }
