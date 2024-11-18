@@ -10,7 +10,8 @@ import {
   LibroIdIdioma,
   LibroResumen,
   LibroNumeroPaginas,
-  LibroPortadaMultimedia
+  LibroPortadaMultimedia,
+  LibroAutores
 } from "../../valueObject";
 import { DateTime } from "luxon";
 import { Genero } from "../genero/genero.entity";
@@ -32,7 +33,8 @@ export class Libro {
     readonly ctl_formato_libro?: FormatoLibro,
     readonly ctl_idioma?: Idioma,
     readonly id?: LibroId,
-    readonly portada_multimedia?: LibroPortadaMultimedia
+    readonly portada_multimedia?: LibroPortadaMultimedia,
+    readonly autores?: LibroAutores,
   ) {
   }
 

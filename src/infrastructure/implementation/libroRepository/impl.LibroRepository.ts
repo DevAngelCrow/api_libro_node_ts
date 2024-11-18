@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { Libro } from "../../../domain/entities/libro/libros.entity";
 import { LibroRepository } from "../../../domain/repositories/libro/LibroRepository";
 import {
@@ -52,6 +52,20 @@ type PostgresLibro = {
   ctl_genero?: { [key: string]: any };
   ctl_idioma?: { [key: string]: any };
 };
+
+type AutorCreate = {
+  id_libro: number;
+  id_autor: number;
+  existeAutor: boolean;
+}[];
+
+type AutoresUpdate = {
+  id: number;
+  id_libro: number;
+  id_autor: number;
+  existeAutor: boolean;
+  estado: boolean;
+}[];
 export class ImplLibroRepository implements LibroRepository {
   private libros: Libro[] = [];
 
@@ -119,18 +133,29 @@ export class ImplLibroRepository implements LibroRepository {
     const { id } = libro;
 
     try {
-      const prismaElement = new ConvertToPrismaData().mntLibroToPrisma(libro);
+      await this.prisma.$transaction(async (tx) => {
+        await tx.mnt_libro.update({
+          where: {
+            id: id?.value,
+          },
+          data: {
+            nombre: libro.nombre.value,
+            fecha_publicacion: libro.fecha_publicacion.value,
+            edicion: libro.edicion.value,
+            portada: libro.portada.value,
+            resumen: libro.resumen.value,
+            numero_paginas: libro.numero_paginas.value,
+            ctl_formato_libro: {
+              connect: { id: libro.id_formato_libro.value },
+            },
+            ctl_genero: { connect: { id: libro.id_genero.value } },
+            ctl_idioma: { connect: { id: libro.id_idioma.value } },
+          },
+        });
 
-      await this.prisma.mnt_libro.update({
-        where: {
-          id: id?.value,
-        },
-        data: {
-          ...prismaElement,
-        },
+        await this.updateLibroAutor(tx, id?.value!, libro.autores?.value!);
       });
     } catch (error) {
-      console.log(error);
       if (error instanceof CustomError) {
         throw error;
       } else {
@@ -140,6 +165,112 @@ export class ImplLibroRepository implements LibroRepository {
       }
     }
   }
+
+  async updateLibroAutor(
+    tx: Prisma.TransactionClient,
+    id: number,
+    idAutores: Array<number>
+  ) {
+    try {
+      const libros = await tx.mnt_libro_autor.findMany({
+        where: {
+          id_libro: id,
+        },
+      });
+
+      //este arreglo almacenara los autores que nunca han sido asociados a un libro.
+      const autoresNuevos: AutorCreate = [];
+
+      //este arreglo almacenara los autores que se actualizaran en la consulta
+      const autoresActualizar: AutoresUpdate = [];
+
+      //comparamos que cada uno de los id del arreglo de idAutores si existan en los id de la consulta
+      //del libro en consideracion, si no, pues este sera creado
+      //ya que nunca ha sido asociado a este libro en consideracion y los pushamos al arreglo de autoresNuevos
+
+      idAutores.forEach((id_autor) => {
+        const existe = libros.some((autor) => autor.id_autor === id_autor);
+        if (!existe) {
+          autoresNuevos.push({
+            id_libro: id,
+            id_autor: id_autor,
+            existeAutor: !existe,
+          });
+        }
+      });
+
+      //comparamos que cada uno de los id del arreglo de la consulta libros existan en el arreglo
+      //de idAutores, por lo que el que no exista o no cumpla con la condicion se procedera a actualizar
+      //es es diferente al caso de create debido a que se esta comparando cada uno del elemento libro contra
+      //los id que el cliente proporciono
+      libros.forEach((libro) => {
+        const existe = idAutores.some((autor) => {
+          return autor === libro.id_autor;
+        });
+        if (!existe) {
+          autoresActualizar.push({
+            id: libro.id,
+            id_libro: id,
+            id_autor: libro.id_autor,
+            existeAutor: libro.estado,
+            estado: libro.estado,
+          });
+        }
+      });
+
+      //si fuera el caso en el que los mismos datos que fueron enviados por el cliente coinciden con el
+      //arreglo de libros procedemos a hacer una segunda validacion, siempre y cuando no existan nuevos registros de autor o
+      //que el arreglo de autores a actualizar este vacio posterior en primer validacion
+      if (!autoresNuevos.length || !autoresActualizar.length) {
+        libros.forEach((libro) => {
+          const existe = idAutores.some((autor) => {
+            return autor === libro.id_autor && libro.estado === false;
+          });
+          if (existe) {
+            autoresActualizar.push({
+              id: libro.id,
+              id_libro: id,
+              id_autor: libro.id_autor,
+              existeAutor: libro.estado,
+              estado: libro.estado,
+            });
+          }
+        });
+      }
+
+      if (autoresNuevos.length) {
+        const nuevosRegistros = autoresNuevos.map((autor) => {
+          return {
+            id_libro: autor.id_libro,
+            id_autor: autor.id_autor,
+          };
+        });
+        await tx.mnt_libro_autor.createMany({
+          data: nuevosRegistros,
+        });
+      }
+
+      autoresActualizar.forEach(async (autor) => {
+        await tx.mnt_libro_autor.update({
+          where: {
+            id: autor.id,
+          },
+          data: {
+            estado: !autor.estado,
+          },
+        });
+      });
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        throw CustomError.internalServer(
+          "Error interno en la actualizacion del libro"
+        );
+      }
+    }
+  }
+
   async delete(id: LibroId): Promise<void> {
     try {
       await this.prisma.mnt_libro.update({
@@ -250,7 +381,6 @@ export class ImplLibroRepository implements LibroRepository {
 
       return new LibroPortada(imagenUrlEdit);
     } catch (error) {
-      console.log(error);
       throw CustomError.internalServer(
         "Error al editar la imagen multimedia en Google Drive"
       );

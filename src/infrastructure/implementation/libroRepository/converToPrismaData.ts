@@ -2,9 +2,7 @@ import { Prisma } from "@prisma/client";
 import { Libro } from "../../../domain/entities/libro/libros.entity";
 
 export class ConvertToPrismaData {
-
   mntLibroToPrisma(libro: Libro): Prisma.mnt_libroCreateInput {
-    
     return {
       nombre: libro.nombre.value,
       fecha_publicacion: libro.fecha_publicacion.value,
@@ -14,7 +12,12 @@ export class ConvertToPrismaData {
       numero_paginas: libro.numero_paginas.value,
       ctl_formato_libro: { connect: { id: libro.id_formato_libro.value } },
       ctl_genero: { connect: { id: libro.id_genero.value } },
-      ctl_idioma: { connect: {id: libro.id_idioma.value }},
+      ctl_idioma: { connect: { id: libro.id_idioma.value } },
+      mnt_libro_autor: {
+        create: libro.autores?.value.map((autor) => ({
+          mnt_autor: { connect: { id: +autor } },
+        })),
+      },
     };
   }
 }

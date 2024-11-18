@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import {
   AutorApellidos,
   AutorEmail,
@@ -23,4 +24,31 @@ export class Autor {
     readonly id?: AutorId,
     readonly ctl_nacionalidad?: Pais
   ) {}
+
+
+  public mapToPrimitives(){
+    const fecha = DateTime.fromJSDate(this.fecha_nacimiento.value);
+    return {
+    id: this.id?.value,
+    nombre: this.nombres.value,
+    fecha_nacimiento: fecha.toFormat('dd-MM-yyyy'),
+    ctl_nacionalidad: this.mapToPrimitiveNacionalidad(),
+    telefono: this.telefono.value,
+    email: this.email.value,
+    estado: this.estado?.value, 
+    }
+  }
+
+  public mapToPrimitiveNacionalidad(){
+    return {
+      nombre: this.ctl_nacionalidad?.nombre.value,
+      abreviacion: this.ctl_nacionalidad?.abreviacion.value,
+      codigo: this.ctl_nacionalidad?.codigo.value,
+      estado: this.ctl_nacionalidad?.estado?.value,
+      id: this.ctl_nacionalidad?.id?.value,
+
+    }
+  }
 }
+
+

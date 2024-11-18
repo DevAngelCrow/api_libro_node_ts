@@ -1,3 +1,4 @@
+import { AutorGetOneById } from "../../application/use_cases";
 import { AutorCreate } from "../../application/use_cases/autor/autorCreate/autorCreate";
 import { AutorDelete } from "../../application/use_cases/autor/autorDelete/autorDelete";
 import { AutorEdit } from "../../application/use_cases/autor/autorEdit/autorEdit";
@@ -32,6 +33,6 @@ export const ServiceContainer = {
         update: new AutorEdit(autorRepository),
         delete: new AutorDelete(autorRepository),
         getAll: new AutorGetAll(autorRepository),
-        getOneById: new AutorGetAll(autorRepository)
+        getOneById: new AutorGetOneById(autorRepository)
     }
 }

@@ -14,6 +14,7 @@ export class LibroController {
       id_idioma,
       resumen,
       numero_paginas,
+      autores
     } = request.body;
 
     const portada = request.file!;
@@ -30,7 +31,8 @@ export class LibroController {
         Number(id_idioma),
         resumen,
         Number(numero_paginas),
-        estado
+        estado,
+        autores,
       )
       .then(() =>
         response.status(201).send({ message: "Libro creado exitosamente" })
@@ -54,6 +56,7 @@ export class LibroController {
       resumen,
       numero_paginas,
       portada_multimedia,
+      autores,
     } = request.body;
 
     const { id } = request.params;
@@ -72,7 +75,8 @@ export class LibroController {
         id_idioma,
         resumen,
         numero_paginas,
-        portada_multimedia
+        portada_multimedia,
+        autores
       )
       .then(() =>
         response.status(200).json({

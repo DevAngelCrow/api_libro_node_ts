@@ -31,4 +31,25 @@ export class AutorController {
         response.status(error.statusCode).json({ message: error.message });
       });
   }
+
+  async getOneById(request: Request, response: Response){
+    console.log('controlador getByid')
+    const { id } = request.params;
+
+    await ServiceContainer.autor.getOneById.run(+id)
+    .then((res)=>{
+      return response.status(200).json(res.mapToPrimitives());
+    })
+    .catch(error => response.status(error.statusCode).json({message: error.message}))
+
+
+  }
+
+  async getAllAutores(request: Request, response: Response){
+    await ServiceContainer.autor.getAll.run()
+    .then((res)=>{
+      return response.status(200).json(res.map((autor) => autor.mapToPrimitives()))
+    })
+    .catch(error => response.status(error.statusCode).json({message: error.message}))
+  }
 }

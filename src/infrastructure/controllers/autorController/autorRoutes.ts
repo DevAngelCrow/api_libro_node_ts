@@ -8,6 +8,8 @@ export class AutorRoutes{
         const controller = new AutorController();
 
         router.post('/create', controller.createAutor );
+        router.get('/:id', controller.getOneById);
+        router.get('/autores/listado', controller.getAllAutores)
 
         return router;
     }

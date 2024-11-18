@@ -118,8 +118,9 @@ model mnt_libro_autor {
   id_autor   Int
   created_at DateTime? @default(now()) @db.Timestamp(6)
   updated_at DateTime? @db.Timestamp(6)
-  mnt_autor  mnt_autor @relation(fields: [id_autor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_autor_mnt_autor_fk")
-  mnt_libro  mnt_libro @relation(fields: [id_libro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_autor_mnt_libro_fk")
+  estado     Boolean   @default(true)
+  mnt_autor  mnt_autor @relation(fields: [id_autor], references: [id], onDelete: Cascade, map: "mnt_libro_autor_mnt_autor_fk")
+  mnt_libro  mnt_libro @relation(fields: [id_libro], references: [id], onDelete: Cascade, map: "mnt_libro_autor_mnt_libro_fk")
 }
 
 model mnt_libro_editorial {
