@@ -16,3 +16,8 @@ export * from './editorial/editorialGetOneById/editorialGetOneById';
 export * from './editorial/editorialDelete/editorialDelete';
 export * from './editorial/editorialEdit/editorialEdit';
 export * from './editorial/editorialGetAll/editorialGetAll';
+export * from './pais/paisCreate/paisCreate';
+export * from './pais/paisDelete/paisDelete';
+export * from './pais/paisEdit/paisEdit';
+export * from './pais/paisGetAll/paisGetAll';
+export * from './pais/paisGetOneById/paisGetOneById';

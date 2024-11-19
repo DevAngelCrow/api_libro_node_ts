@@ -130,6 +130,7 @@ export class ImplEditorialRepository implements EditorialRepository {
             sitio_web: editorial.sitio_web?.value,
             telefono: editorial.telefono.value,
             estado: editorial.estado.value,
+            updated_at: new Date(Date.now()),
           },
         });
 
@@ -225,15 +226,17 @@ export class ImplEditorialRepository implements EditorialRepository {
   async delete(id: EditorialId): Promise<void> {
     try {
       await this.prisma.mnt_editorial.update({
-        where:{
+        where: {
           id: id.value,
         },
-        data:{
-          estado: false
-        }
-      })
+        data: {
+          estado: false,
+        },
+      });
     } catch (error) {
-      throw CustomError.internalServer("Error interno en la eliminación de la editorial")
+      throw CustomError.internalServer(
+        "Error interno en la eliminación de la editorial"
+      );
     }
   }
 

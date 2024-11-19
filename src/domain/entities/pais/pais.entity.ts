@@ -1,9 +1,4 @@
-import { PaisId } from "../../valueObject";
-import { PaisAbreviacion } from "../../valueObject/paisValueObject/paisAbreviacion.value.object";
-import { PaisCodigo } from "../../valueObject/paisValueObject/paisCodigo.value.object";
-import { PaisEstado } from "../../valueObject/paisValueObject/paisEstado.value.object";
-import { PaisNombre } from "../../valueObject/paisValueObject/paisNombre.value.object";
-
+import { PaisId, PaisNombre, PaisEstado, PaisCodigo, PaisAbreviacion } from "../../valueObject";
 export class Pais{
     constructor(
         readonly nombre: PaisNombre,
@@ -12,4 +7,14 @@ export class Pais{
         readonly estado?: PaisEstado,
         readonly id?: PaisId
     ){}
+
+    public mapToPrimitives(){
+        return {
+            id: this.id?.value,
+            nombre: this.nombre.value,
+            abreviacion: this.abreviacion.value,
+            codigo: this.codigo.value,
+            estado: this.estado?.value,
+        }
+    }
 }

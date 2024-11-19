@@ -35,7 +35,6 @@ import { Idioma } from "../../../domain/entities/idioma/idioma.entity";
 import drive from "../../config/googleDrive";
 import { Readable } from "stream";
 import { LibroPortadaMultimedia } from "../../../domain/valueObject/libroValueObject/libroPortadaMultimedia.value.object";
-import { DateTime } from "luxon";
 
 type PostgresLibro = {
   id: number;
@@ -58,8 +57,6 @@ export class ImplLibroRepository implements LibroRepository {
 
   private prisma = new PrismaClient();
 
-  private dt = DateTime;
-
   async create(libro: Libro): Promise<void> {
     try {
       const prismaData = new ConvertToPrismaData().mntLibroToPrisma(libro);
@@ -73,10 +70,24 @@ export class ImplLibroRepository implements LibroRepository {
   async getAll(): Promise<Libro[]> {
     try {
       const librosBd = await this.prisma.mnt_libro.findMany({
-        include: {
+        select: {
           ctl_formato_libro: true,
           ctl_genero: true,
           ctl_idioma: true,
+          id: true,
+          nombre: true,
+          fecha_publicacion: true,
+          id_genero: true,
+          id_formato_libro: true,
+          edicion: true,
+          portada: true,
+          estado: true,
+          id_idioma: true,
+          resumen: true,
+          numero_paginas: true,
+        },
+        orderBy: {
+          id: "asc",
         },
       });
 
@@ -94,10 +105,21 @@ export class ImplLibroRepository implements LibroRepository {
         where: {
           id: id.value,
         },
-        include: {
+        select: {
           ctl_formato_libro: true,
           ctl_genero: true,
           ctl_idioma: true,
+          id: true,
+          nombre: true,
+          fecha_publicacion: true,
+          id_genero: true,
+          id_formato_libro: true,
+          edicion: true,
+          portada: true,
+          estado: true,
+          id_idioma: true,
+          resumen: true,
+          numero_paginas: true,
         },
       });
 
@@ -109,7 +131,7 @@ export class ImplLibroRepository implements LibroRepository {
 
       if (!portadaBuffer) {
         throw CustomError.internalServer(
-          "Ocurrio un problema al obtener la imagen de Google Drive"
+          "Ocurrio un problema al obtener la imagen desde Google Drive"
         );
       }
 
@@ -130,15 +152,14 @@ export class ImplLibroRepository implements LibroRepository {
           data: {
             nombre: libro.nombre.value,
             fecha_publicacion: libro.fecha_publicacion.value,
+            id_genero: libro.id_genero.value,
             edicion: libro.edicion.value,
             portada: libro.portada.value,
+            id_formato_libro: libro.id_formato_libro.value,
             resumen: libro.resumen.value,
             numero_paginas: libro.numero_paginas.value,
-            ctl_formato_libro: {
-              connect: { id: libro.id_formato_libro.value },
-            },
-            ctl_genero: { connect: { id: libro.id_genero.value } },
-            ctl_idioma: { connect: { id: libro.id_idioma.value } },
+            estado: libro.estado?.value,
+            updated_at: new Date(Date.now()),
           },
         });
 

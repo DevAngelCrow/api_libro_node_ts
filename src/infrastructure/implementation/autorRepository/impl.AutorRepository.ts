@@ -49,9 +49,20 @@ export class ImplAutorRepository implements AutorRepository {
   async getAll(): Promise<Autor[]> {
     try {
       const autores = await this.prisma.mnt_autor.findMany({
-        include: {
+        select: {
           ctl_pais: true,
+          id: true,
+          nombres: true,
+          apellidos: true,
+          fecha_nacimiento: true,
+          id_nacionalidad: true,
+          telefono: true,
+          email: true,
+          estado: true,
         },
+        orderBy: {
+          id: 'asc'
+        }
       });
 
       this.autores = autores.map((autor) => this.mapToDomain(autor));
@@ -67,8 +78,16 @@ export class ImplAutorRepository implements AutorRepository {
         where: {
           id: id.value,
         },
-        include: {
+        select: {
           ctl_pais: true,
+          id: true,
+          nombres: true,
+          apellidos: true,
+          fecha_nacimiento: true,
+          telefono: true,
+          email: true,
+          estado: true,
+          id_nacionalidad: true,
         },
       });
 
@@ -93,11 +112,7 @@ export class ImplAutorRepository implements AutorRepository {
             nombres: autor.nombres.value,
             apellidos: autor.apellidos.value,
             fecha_nacimiento: autor.fecha_nacimiento.value,
-            ctl_pais: {
-              connect: {
-                id: autor.id_nacionalidad?.value,
-              },
-            },
+            id_nacionalidad: autor.id_nacionalidad.value,
             telefono: autor.telefono.value,
             email: autor.email.value,
             estado: true,

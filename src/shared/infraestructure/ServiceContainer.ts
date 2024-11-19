@@ -1,4 +1,4 @@
-import { AutorGetOneById, EditorialCreate, EditorialDelete, EditorialEdit, EditorialGetAll, EditorialGetOneById } from "../../application/use_cases";
+import { AutorGetOneById, EditorialCreate, EditorialDelete, EditorialEdit, EditorialGetAll, EditorialGetOneById, PaisCreate, PaisDelete, PaisEdit, PaisGetAll, PaisGetOneById } from "../../application/use_cases";
 import { AutorCreate } from "../../application/use_cases/autor/autorCreate/autorCreate";
 import { AutorDelete } from "../../application/use_cases/autor/autorDelete/autorDelete";
 import { AutorEdit } from "../../application/use_cases/autor/autorEdit/autorEdit";
@@ -14,10 +14,12 @@ import { LibroImagenUrlCreate } from "../../application/use_cases/libro/libroIma
 import { ImplAutorRepository } from "../../infrastructure/implementation/autorRepository/impl.AutorRepository";
 import { ImplEditorialRepository } from "../../infrastructure/implementation/editorialRepository/impl.EditorialRepository";
 import { ImplLibroRepository } from "../../infrastructure/implementation/libroRepository/impl.LibroRepository";
+import { ImplPaisRepository } from "../../infrastructure/implementation/paisRepository/impl.PaisRepository";
 
 const libroRepository = new ImplLibroRepository();
 const autorRepository = new ImplAutorRepository();
 const editorialRepository = new ImplEditorialRepository();
+const paisRepository = new ImplPaisRepository();
 
 export const ServiceContainer = {
     libro: {
@@ -43,5 +45,12 @@ export const ServiceContainer = {
         delete: new EditorialDelete(editorialRepository),
         getAll: new EditorialGetAll(editorialRepository),
         getOneById: new EditorialGetOneById(editorialRepository)
+    },
+    pais:{
+        create: new PaisCreate(paisRepository),
+        update: new PaisEdit(paisRepository),
+        delete: new PaisDelete(paisRepository),
+        getAll: new PaisGetAll(paisRepository),
+        getOneById: new PaisGetOneById(paisRepository)
     }
 }
