@@ -1,9 +1,9 @@
-
 import { Libro } from "../../../../domain/entities/libro/libros.entity";
 import { LibroRepository } from "../../../../domain/repositories/index";
 import {
   LibroAutores,
   LibroEdicion,
+  LibroEditoriales,
   LibroEstado,
   LibroFechaPublicacion,
   LibroGeneroId,
@@ -29,14 +29,16 @@ export class LibroCreate {
     resumen: string,
     numero_paginas: number,
     estado: boolean,
-    autores: Array<number>
+    autores: Array<number>,
+    editoriales: Array<number>
   ): Promise<void> {
-    
-    const urlImagenPortada = await this.repository.createUrlPortada(portada)
-    
-    if(typeof estado === 'string' && estado === 'true'){
+    const urlImagenPortada = await this.repository.createUrlPortada(portada);
+
+    if (typeof estado === "string" && estado === "true") {
       estado = true;
-    }else{ estado = false}
+    } else {
+      estado = false;
+    }
 
     const libro = new Libro(
       new LibroNombre(nombre),
@@ -55,9 +57,8 @@ export class LibroCreate {
       undefined,
       undefined,
       new LibroAutores(autores),
+      new LibroEditoriales(editoriales)
     );
-
-    
 
     return this.repository.create(libro);
   }

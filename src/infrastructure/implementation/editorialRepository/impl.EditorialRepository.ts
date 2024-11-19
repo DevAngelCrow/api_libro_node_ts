@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { Editorial, Pais, TipoEditorial } from "../../../domain/entities";
 import { EditorialRepository } from "../../../domain/repositories";
 import {
@@ -8,7 +8,6 @@ import {
   EditorialId,
   EditorialIdPais,
   EditorialIdTipoEditorial,
-  EditorialLibros,
   EditorialNombre,
   EditorialSitioWeb,
   EditorialTelefono,
@@ -23,6 +22,7 @@ import {
 } from "../../../domain/valueObject";
 import { CustomError } from "../../../domain";
 import { ConvertToPrismaData } from "./converToPrismaData";
+import { where } from "sequelize";
 type PostgresEditorial = {
   id: number;
   nombre: string;
@@ -89,25 +89,152 @@ export class ImplEditorialRepository implements EditorialRepository {
           id: id.value,
         },
         select: {
-          id: true, nombre: true, direccion: true, anio_fundacion: true, ctl_pais: true, id_pais: true, id_tipo_editorial: true, ctl_tipo_editorial: true, sitio_web: true, telefono: true, estado: true
-        }
+          id: true,
+          nombre: true,
+          direccion: true,
+          anio_fundacion: true,
+          ctl_pais: true,
+          id_pais: true,
+          id_tipo_editorial: true,
+          ctl_tipo_editorial: true,
+          sitio_web: true,
+          telefono: true,
+          estado: true,
+        },
       });
 
-      if(!editorial){
+      if (!editorial) {
         return null;
       }
 
       return this.mapToDomain(editorial);
-
     } catch (error) {
-      throw CustomError.internalServer("Error interno del servido")
+      throw CustomError.internalServer("Error interno del servidor");
     }
   }
-  update(editorial: Editorial): Promise<void> {
-    throw new Error("Method not implemented.");
+  async update(editorial: Editorial): Promise<void> {
+    try {
+      const { id } = editorial;
+
+      await this.prisma.$transaction(async (tx) => {
+        await tx.mnt_editorial.update({
+          where: {
+            id: id?.value,
+          },
+          data: {
+            nombre: editorial.nombre.value,
+            direccion: editorial.direccion.value,
+            anio_fundacion: editorial.anio_fundacion.value,
+            id_pais: editorial.id_pais.value,
+            id_tipo_editorial: editorial.id_tipo_editorial.value,
+            sitio_web: editorial.sitio_web?.value,
+            telefono: editorial.telefono.value,
+            estado: editorial.estado.value,
+          },
+        });
+
+        await this.updateEditorialLibro(
+          tx,
+          editorial.libros?.value!,
+          id?.value!
+        );
+      });
+    } catch (error) {
+      throw CustomError.internalServer("Error interno del servidor");
+    }
   }
-  delete(id: EditorialId): Promise<void> {
-    throw new Error("Method not implemented.");
+
+  async updateEditorialLibro(
+    tx: Prisma.TransactionClient,
+    idLibros: Array<number>,
+    id: number
+  ) {
+    try {
+      const libros = await tx.mnt_libro_editorial.findMany({
+        where: {
+          id_editorial: id,
+        },
+        select: {
+          id: true,
+          id_editorial: true,
+          id_libro: true,
+          estado: true,
+        },
+      });
+
+      const idsExistentes = new Set(libros.map((libro) => libro.id_editorial));
+
+      const librosDesactivar = libros.filter(
+        (libro) => !idLibros.includes(libro.id_libro)
+      );
+
+      const librosReactivar = libros.filter(
+        (libro) => idLibros.includes(libro.id_libro) && libro.estado === false
+      );
+
+      const librosNuevos = idLibros.filter(
+        (idLibro) => !idsExistentes.has(idLibro)
+      );
+
+      if (librosDesactivar.length) {
+        await tx.mnt_libro_editorial.updateMany({
+          where: {
+            id_editorial: id,
+            id_libro: { in: librosDesactivar.map((libro) => libro.id_libro) },
+          },
+          data: {
+            estado: false,
+            updated_at: new Date(Date.now()),
+          },
+        });
+      }
+
+      if (librosReactivar.length) {
+        await tx.mnt_libro_editorial.updateMany({
+          where: {
+            id_editorial: id,
+            id_libro: { in: librosReactivar.map((libro) => libro.id_libro) },
+          },
+          data: {
+            estado: true,
+            updated_at: new Date(Date.now()),
+          },
+        });
+      }
+
+      if (librosNuevos.length) {
+        const nuevosRegistros = librosNuevos.map((idLibro) => ({
+          id_editorial: id,
+          id_libro: idLibro,
+          estado: true,
+        }));
+        await tx.mnt_libro_editorial.createMany({
+          data: nuevosRegistros,
+        });
+      }
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        throw CustomError.internalServer(
+          "Error interno en la actualizacion de la editorial"
+        );
+      }
+    }
+  }
+  async delete(id: EditorialId): Promise<void> {
+    try {
+      await this.prisma.mnt_editorial.update({
+        where:{
+          id: id.value,
+        },
+        data:{
+          estado: false
+        }
+      })
+    } catch (error) {
+      throw CustomError.internalServer("Error interno en la eliminación de la editorial")
+    }
   }
 
   private mapToDomain(editorial: PostgresEditorial): Editorial {

@@ -36,7 +36,6 @@ export class AutorController {
   }
 
   async getOneById(request: Request, response: Response){
-    console.log('controlador getByid')
     const { id } = request.params;
 
     await ServiceContainer.autor.getOneById.run(+id)

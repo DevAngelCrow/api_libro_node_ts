@@ -143,6 +143,11 @@ export class ImplLibroRepository implements LibroRepository {
         });
 
         await this.updateLibroAutor(tx, id?.value!, libro.autores?.value!);
+        await this.updateLibroEditorial(
+          tx,
+          id?.value!,
+          libro.editoriales?.value!
+        );
       });
     } catch (error) {
       if (error instanceof CustomError) {
@@ -234,6 +239,93 @@ export class ImplLibroRepository implements LibroRepository {
     }
   }
 
+  async updateLibroEditorial(
+    tx: Prisma.TransactionClient,
+    id: number,
+    idEditoriales: Array<number>
+  ) {
+    try {
+      const libros = await tx.mnt_libro_editorial.findMany({
+        where: {
+          id_libro: id,
+        },
+        select: {
+          id: true,
+          id_libro: true,
+          id_editorial: true,
+          estado: true,
+        },
+      });
+
+      const idsExistentes = new Set(libros.map((libro) => libro.id_editorial));
+
+      //este arreglo almacenará los autores que ya estan asociados pero que seran desactivados del libro.
+      const editorialesADesactivar = libros.filter(
+        (libro) => !idEditoriales.includes(libro.id_editorial)
+      );
+
+      //este arreglo almacenará los autores que ya estan asociados pero que seran activados del libro
+      const editorialesReactivar = libros.filter(
+        (libro) =>
+          idEditoriales.includes(libro.id_editorial) && libro.estado === false
+      );
+      //este arreglo almacenara los autores que nunca han sido asociados a un libro.
+      const editorialesNuevas = idEditoriales.filter(
+        (idEditorial) => !idsExistentes.has(idEditorial)
+      );
+
+      if (editorialesADesactivar.length) {
+        await tx.mnt_libro_editorial.updateMany({
+          where: {
+            id_libro: id,
+            id_editorial: {
+              in: editorialesADesactivar.map(
+                (editorial) => editorial.id_editorial
+              ),
+            },
+          },
+          data: {
+            estado: false,
+            updated_at: new Date(Date.now()),
+          },
+        });
+      }
+
+      if (editorialesReactivar.length) {
+        await tx.mnt_libro_editorial.updateMany({
+          where: {
+            id_libro: id,
+            id_editorial: {
+              in: editorialesReactivar.map(
+                (editorial) => editorial.id_editorial
+              ),
+            },
+          },
+          data: { estado: true, updated_at: new Date(Date.now()) },
+        });
+      }
+
+      if (editorialesNuevas.length) {
+        const nuevosRegistros = editorialesNuevas.map((idEditorial) => ({
+          id_libro: id,
+          id_editorial: idEditorial,
+          estado: true,
+        }));
+
+        await tx.mnt_libro_editorial.createMany({
+          data: nuevosRegistros,
+        });
+      }
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        throw CustomError.internalServer(
+          "Error interno en la actualizacion del libro"
+        );
+      }
+    }
+  }
   async delete(id: LibroId): Promise<void> {
     try {
       await this.prisma.mnt_libro.update({

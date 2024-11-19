@@ -14,6 +14,7 @@ import {
   LibroResumen,
   LibroNumeroPaginas,
   LibroAutores,
+  LibroEditoriales,
 } from "../../../../domain/valueObject";
 import { LibroPortadaMultimedia } from "../../../../domain/valueObject/libroValueObject/libroPortadaMultimedia.value.object";
 
@@ -33,7 +34,8 @@ export class LibroEdit {
     resumen: string,
     numero_paginas: number,
     portada_multimedia: Buffer,
-    autores: Array<number>
+    autores: Array<number>,
+    editoriales: Array<number>
   ): Promise<void> {
     const libro = new Libro(
       new LibroNombre(nombre),
@@ -52,6 +54,7 @@ export class LibroEdit {
       new LibroId(id),
       new LibroPortadaMultimedia(portada_multimedia),
       new LibroAutores(autores),
+      new LibroEditoriales(editoriales)
     );
 
     const libroExist = await this.repository.getOneById(libro.id!);

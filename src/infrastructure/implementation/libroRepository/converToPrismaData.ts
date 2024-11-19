@@ -18,6 +18,11 @@ export class ConvertToPrismaData {
           mnt_autor: { connect: { id: +autor } },
         })),
       },
+      mnt_libro_editorial: {
+        create: libro.editoriales?.value.map((editorial) => ({
+          mnt_editorial: { connect: { id: +editorial } },
+        })),
+      },
     };
   }
 }

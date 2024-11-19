@@ -11,7 +11,8 @@ import {
   LibroResumen,
   LibroNumeroPaginas,
   LibroPortadaMultimedia,
-  LibroAutores
+  LibroAutores,
+  LibroEditoriales
 } from "../../valueObject";
 import { DateTime } from "luxon";
 import { Genero } from "../genero/genero.entity";
@@ -35,6 +36,7 @@ export class Libro {
     readonly id?: LibroId,
     readonly portada_multimedia?: LibroPortadaMultimedia,
     readonly autores?: LibroAutores,
+    readonly editoriales?: LibroEditoriales
   ) {
   }
 

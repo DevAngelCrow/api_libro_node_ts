@@ -11,6 +11,7 @@ export * from './libroValueObject/libroResumen.value.object';
 export * from './libroValueObject/libroNumeroPaginas.value.object';
 export * from './libroValueObject/libroPortadaMultimedia.value.object';
 export * from './libroValueObject/libroAutores.value.object';
+export * from './libroValueObject/libroEditoriales.value.object';
 export * from './generoValueObject/generoDescripcion.value.object';
 export * from './generoValueObject/generoEstado.value.object';
 export * from './generoValueObject/generoId.value.object';

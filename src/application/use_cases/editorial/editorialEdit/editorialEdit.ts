@@ -1,7 +1,7 @@
 import { CustomError } from "../../../../domain";
 import { Editorial } from "../../../../domain/entities";
 import { EditorialRepository } from "../../../../domain/repositories";
-import { EditorialAnioFundacion, EditorialDireccion, EditorialEstado, EditorialId, EditorialIdPais, EditorialIdTipoEditorial, EditorialNombre, EditorialSitioWeb, EditorialTelefono } from "../../../../domain/valueObject";
+import { EditorialAnioFundacion, EditorialDireccion, EditorialEstado, EditorialId, EditorialIdPais, EditorialIdTipoEditorial, EditorialLibros, EditorialNombre, EditorialSitioWeb, EditorialTelefono } from "../../../../domain/valueObject";
 
 export class EditorialEdit{
     constructor(private repository: EditorialRepository){}
@@ -16,6 +16,7 @@ export class EditorialEdit{
         sitio_web: string,
         telefono: string,
         estado: boolean,
+        libros: Array<number>
     ):Promise<void>{
         const editorial = await this.repository.getOneById(new EditorialId(id));
 
@@ -33,6 +34,7 @@ export class EditorialEdit{
             new EditorialEstado(estado),
             new EditorialId(id),
             new EditorialSitioWeb(sitio_web),
+            new EditorialLibros(libros)
         );
 
         return this.repository.update(editorialEdit);

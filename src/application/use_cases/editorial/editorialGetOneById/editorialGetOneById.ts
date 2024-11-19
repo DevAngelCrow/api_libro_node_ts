@@ -8,7 +8,6 @@ export class EditorialGetOneById{
 
     async run(id: number):Promise<Editorial>{
         const editorial = await this.repository.getOneById(new EditorialId(id));
-
         if(!editorial){
             throw CustomError.notFound("Editorial no encontrada")
         }

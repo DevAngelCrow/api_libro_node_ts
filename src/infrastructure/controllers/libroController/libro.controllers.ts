@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { ServiceContainer } from "../../../shared/infraestructure/ServiceContainer";
 
-
 export class LibroController {
   async createLibro(request: Request, response: Response) {
     const {
@@ -14,7 +13,8 @@ export class LibroController {
       id_idioma,
       resumen,
       numero_paginas,
-      autores
+      autores,
+      editoriales,
     } = request.body;
 
     const portada = request.file!;
@@ -33,6 +33,7 @@ export class LibroController {
         Number(numero_paginas),
         estado,
         autores,
+        editoriales
       )
       .then(() =>
         response.status(201).send({ message: "Libro creado exitosamente" })
@@ -43,7 +44,6 @@ export class LibroController {
   }
 
   async editLibro(request: Request, response: Response) {
-    console.log("controlador editLibro");
     const {
       nombre,
       fecha_publicacion,
@@ -57,6 +57,7 @@ export class LibroController {
       numero_paginas,
       portada_multimedia,
       autores,
+      editoriales,
     } = request.body;
 
     const { id } = request.params;
@@ -76,7 +77,8 @@ export class LibroController {
         resumen,
         numero_paginas,
         portada_multimedia,
-        autores
+        autores,
+        editoriales
       )
       .then(() =>
         response.status(200).json({
@@ -154,7 +156,6 @@ export class LibroController {
   }
 
   async putImageFile(request: Request, response: Response) {
-    console.log("Controlador edit imagen");
     const id = request.query.id ? request.query.id.toString() : "";
 
     const archivo = request.file!;
