@@ -6,3 +6,4 @@ export * from '../entities/libro/libros.entity';
 export * from '../entities/pais/pais.entity';
 export * from '../entities/editorial/editorial.entity';
 export * from '../entities/tipo_editorial/tipoEditorial.entity';
+export * from '../entities/editorial_libro/editorialLibro.entity';

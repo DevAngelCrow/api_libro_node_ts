@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { Editorial } from "../../../domain/entities";
 
+
 export class ConvertToPrismaData{
     mntEditorialToPrisma(editorial: Editorial) : Prisma.mnt_editorialCreateInput{
         return {
@@ -20,6 +21,11 @@ export class ConvertToPrismaData{
                     id: editorial.id_tipo_editorial.value
                 }
             },
+            mnt_libro_editorial: {
+                create: editorial.libros?.value.map((libro) =>  ({
+                    mnt_libro: {connect: { id: +libro}}
+                }))
+            }
         }
     }
 }

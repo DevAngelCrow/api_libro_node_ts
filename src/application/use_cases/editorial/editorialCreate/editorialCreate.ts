@@ -1,6 +1,6 @@
 import { Editorial } from "../../../../domain/entities";
 import { EditorialRepository } from "../../../../domain/repositories";
-import { EditorialAnioFundacion, EditorialDireccion, EditorialEstado, EditorialIdPais, EditorialIdTipoEditorial, EditorialNombre, EditorialSitioWeb, EditorialTelefono } from "../../../../domain/valueObject";
+import { EditorialAnioFundacion, EditorialDireccion, EditorialEstado, EditorialIdPais, EditorialIdTipoEditorial, EditorialLibros, EditorialNombre, EditorialSitioWeb, EditorialTelefono } from "../../../../domain/valueObject";
 
 export class EditorialCreate{
     constructor(private repository: EditorialRepository){}
@@ -14,6 +14,7 @@ export class EditorialCreate{
         sitio_web: string,
         telefono: string,
         estado: boolean = true,
+        libros: Array<number>
     ): Promise<void>{
         const editorial = new Editorial(
             new EditorialNombre(nombre),
@@ -25,6 +26,7 @@ export class EditorialCreate{
             new EditorialEstado(estado),
             undefined,
             new EditorialSitioWeb(sitio_web),
+            new EditorialLibros(libros),
         );
 
         return this.repository.create(editorial);

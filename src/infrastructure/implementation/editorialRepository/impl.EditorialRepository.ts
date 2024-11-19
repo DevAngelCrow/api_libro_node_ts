@@ -8,6 +8,7 @@ import {
   EditorialId,
   EditorialIdPais,
   EditorialIdTipoEditorial,
+  EditorialLibros,
   EditorialNombre,
   EditorialSitioWeb,
   EditorialTelefono,
@@ -120,6 +121,7 @@ export class ImplEditorialRepository implements EditorialRepository {
       new EditorialEstado(editorial.estado),
       new EditorialId(editorial.id),
       new EditorialSitioWeb(editorial.sitio_web!),
+      undefined,
       new Pais(
         new PaisNombre(editorial.ctl_pais?.nombre!),
         new PaisAbreviacion(editorial.ctl_pais?.abreviacion!),

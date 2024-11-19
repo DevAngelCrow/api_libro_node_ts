@@ -1,5 +1,5 @@
 import { Pais, TipoEditorial } from "..";
-import { EditorialAnioFundacion, EditorialDireccion, EditorialEstado, EditorialId, EditorialIdPais, EditorialIdTipoEditorial, EditorialNombre, EditorialSitioWeb, EditorialTelefono } from "../../valueObject";
+import { EditorialAnioFundacion, EditorialDireccion, EditorialEstado, EditorialId, EditorialIdPais, EditorialIdTipoEditorial, EditorialLibros, EditorialNombre, EditorialSitioWeb, EditorialTelefono } from "../../valueObject";
 
 
 export class Editorial{
@@ -13,6 +13,7 @@ export class Editorial{
         readonly estado: EditorialEstado,
         readonly id?: EditorialId,
         readonly sitio_web?: EditorialSitioWeb,
+        readonly libros?: EditorialLibros,
         readonly ctl_pais?: Pais,
         readonly ctl_tipo_editorial?: TipoEditorial,
     ){}

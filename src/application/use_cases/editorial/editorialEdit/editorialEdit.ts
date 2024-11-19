@@ -15,7 +15,7 @@ export class EditorialEdit{
         id_tipo_editorial: number,
         sitio_web: string,
         telefono: string,
-        estado: boolean = true,
+        estado: boolean,
     ):Promise<void>{
         const editorial = await this.repository.getOneById(new EditorialId(id));
 
