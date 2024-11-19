@@ -19,7 +19,7 @@ export class ConvertToPrismaData{
                 connect: {
                     id: editorial.id_tipo_editorial.value
                 }
-            }
+            },
         }
     }
 }

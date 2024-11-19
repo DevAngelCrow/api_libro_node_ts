@@ -81,8 +81,26 @@ export class ImplEditorialRepository implements EditorialRepository {
       throw CustomError.internalServer("Error interno del servidor");
     }
   }
-  getOneById(id: EditorialId): Promise<Editorial | null> {
-    throw new Error("Method not implemented.");
+  async getOneById(id: EditorialId): Promise<Editorial | null> {
+    try {
+      const editorial = await this.prisma.mnt_editorial.findUnique({
+        where: {
+          id: id.value,
+        },
+        select: {
+          id: true, nombre: true, direccion: true, anio_fundacion: true, ctl_pais: true, id_pais: true, id_tipo_editorial: true, ctl_tipo_editorial: true, sitio_web: true, telefono: true, estado: true
+        }
+      });
+
+      if(!editorial){
+        return null;
+      }
+
+      return this.mapToDomain(editorial);
+
+    } catch (error) {
+      throw CustomError.internalServer("Error interno del servido")
+    }
   }
   update(editorial: Editorial): Promise<void> {
     throw new Error("Method not implemented.");

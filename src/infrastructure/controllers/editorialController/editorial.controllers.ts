@@ -6,5 +6,7 @@ export class EditorialController {
         const { nombre, direccion, anio_fundacion, id_pais, id_tipo_editorial, sitio_web, telefono, estado } = request.body;
 
         await ServiceContainer.editorial.create.run(nombre, direccion, anio_fundacion, id_pais, id_tipo_editorial, sitio_web, telefono, estado)
+        .then(()=> response.status(201).json({message: "Editorial creada exitosamente"}))
+        .catch((error) => response.status(error.statusCode).json({message: error.message}))
     }
 }
