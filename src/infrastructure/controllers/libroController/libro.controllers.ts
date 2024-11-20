@@ -24,13 +24,13 @@ export class LibroController {
       .run(
         nombre,
         formato_fecha,
-        Number(id_genero),
+        +id_genero,
         edicion,
         portada,
-        Number(id_formato_libro),
-        Number(id_idioma),
+        +id_formato_libro,
+        +id_idioma,
         resumen,
-        Number(numero_paginas),
+        +numero_paginas,
         estado,
         autores,
         editoriales
@@ -65,7 +65,7 @@ export class LibroController {
     const formato_fecha = new Date(fecha_publicacion);
     await ServiceContainer.libro.update
       .run(
-        Number(id),
+        +id,
         nombre,
         formato_fecha,
         id_genero,

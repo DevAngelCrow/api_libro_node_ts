@@ -14,4 +14,15 @@ export class Idioma {
     readonly estado: IdiomaEstado,
     readonly id?: IdiomaId,
   ) {}
+
+  public mapToPrimitives(){
+    return {
+      id: this.id?.value,
+      idioma: this.idioma.value,
+      abreviatura: this.abreviatura.value,
+      region: this.region?.value,
+      estado: this.estado.value,
+
+    }
+  }
 }

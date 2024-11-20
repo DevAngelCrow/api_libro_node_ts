@@ -1,8 +1,25 @@
-import { AutorGetOneById, EditorialCreate, EditorialDelete, EditorialEdit, EditorialGetAll, EditorialGetOneById, PaisCreate, PaisDelete, PaisEdit, PaisGetAll, PaisGetOneById } from "../../application/use_cases";
+import {
+  AutorGetOneById,
+  EditorialCreate,
+  EditorialDelete,
+  EditorialEdit,
+  EditorialGetAll,
+  EditorialGetOneById,
+  PaisCreate,
+  PaisDelete,
+  PaisEdit,
+  PaisGetAll,
+  PaisGetOneById,
+} from "../../application/use_cases";
 import { AutorCreate } from "../../application/use_cases/autor/autorCreate/autorCreate";
 import { AutorDelete } from "../../application/use_cases/autor/autorDelete/autorDelete";
 import { AutorEdit } from "../../application/use_cases/autor/autorEdit/autorEdit";
 import { AutorGetAll } from "../../application/use_cases/autor/autorGetAll/autorGetAll";
+import { IdiomaCreate } from "../../application/use_cases/idioma/idiomaCreate/idiomaCreate";
+import { IdiomaDelete } from "../../application/use_cases/idioma/idiomaDelete/idiomaDelete";
+import { IdiomaEdit } from "../../application/use_cases/idioma/idiomaEdit/idiomaEdit";
+import { IdiomaGetAll } from "../../application/use_cases/idioma/idiomaGetAll/idiomaGetAll";
+import { IdiomaGetOneById } from "../../application/use_cases/idioma/idiomaGetOneById/idiomaGetOneById";
 import { LibroCreate } from "../../application/use_cases/libro/libroCreate/libroCreate";
 import { LibroDelete } from "../../application/use_cases/libro/libroDelete/libroDelete";
 import { LibroEdit } from "../../application/use_cases/libro/libroEdit/libroEdit";
@@ -13,6 +30,7 @@ import { LibroGetOneById } from "../../application/use_cases/libro/libroGetOneBy
 import { LibroImagenUrlCreate } from "../../application/use_cases/libro/libroImagenUrlCreate/libroImagenUrlCreate";
 import { ImplAutorRepository } from "../../infrastructure/implementation/autorRepository/impl.AutorRepository";
 import { ImplEditorialRepository } from "../../infrastructure/implementation/editorialRepository/impl.EditorialRepository";
+import { ImplIdiomaRepository } from "../../infrastructure/implementation/idiomaRepository/impl.IdiomaRepository";
 import { ImplLibroRepository } from "../../infrastructure/implementation/libroRepository/impl.LibroRepository";
 import { ImplPaisRepository } from "../../infrastructure/implementation/paisRepository/impl.PaisRepository";
 
@@ -20,37 +38,45 @@ const libroRepository = new ImplLibroRepository();
 const autorRepository = new ImplAutorRepository();
 const editorialRepository = new ImplEditorialRepository();
 const paisRepository = new ImplPaisRepository();
+const idiomaRepository = new ImplIdiomaRepository();
 
 export const ServiceContainer = {
-    libro: {
-        getAll: new LibroGetAll(libroRepository),
-        getOneById: new LibroGetOneById(libroRepository),
-        delete: new LibroDelete(libroRepository),
-        update: new LibroEdit(libroRepository),
-        create: new LibroCreate(libroRepository),
-        createUrlPortada: new LibroImagenUrlCreate(libroRepository),
-        getImageFile: new LibroGetFileImage(libroRepository),
-        editImageFile: new LibroEditImage(libroRepository),
-    },
-    autor: {
-        create: new AutorCreate(autorRepository),
-        update: new AutorEdit(autorRepository),
-        delete: new AutorDelete(autorRepository),
-        getAll: new AutorGetAll(autorRepository),
-        getOneById: new AutorGetOneById(autorRepository)
-    },
-    editorial: {
-        create: new EditorialCreate(editorialRepository),
-        update: new EditorialEdit(editorialRepository),
-        delete: new EditorialDelete(editorialRepository),
-        getAll: new EditorialGetAll(editorialRepository),
-        getOneById: new EditorialGetOneById(editorialRepository)
-    },
-    pais:{
-        create: new PaisCreate(paisRepository),
-        update: new PaisEdit(paisRepository),
-        delete: new PaisDelete(paisRepository),
-        getAll: new PaisGetAll(paisRepository),
-        getOneById: new PaisGetOneById(paisRepository)
-    }
-}
+  libro: {
+    getAll: new LibroGetAll(libroRepository),
+    getOneById: new LibroGetOneById(libroRepository),
+    delete: new LibroDelete(libroRepository),
+    update: new LibroEdit(libroRepository),
+    create: new LibroCreate(libroRepository),
+    createUrlPortada: new LibroImagenUrlCreate(libroRepository),
+    getImageFile: new LibroGetFileImage(libroRepository),
+    editImageFile: new LibroEditImage(libroRepository),
+  },
+  autor: {
+    create: new AutorCreate(autorRepository),
+    update: new AutorEdit(autorRepository),
+    delete: new AutorDelete(autorRepository),
+    getAll: new AutorGetAll(autorRepository),
+    getOneById: new AutorGetOneById(autorRepository),
+  },
+  editorial: {
+    create: new EditorialCreate(editorialRepository),
+    update: new EditorialEdit(editorialRepository),
+    delete: new EditorialDelete(editorialRepository),
+    getAll: new EditorialGetAll(editorialRepository),
+    getOneById: new EditorialGetOneById(editorialRepository),
+  },
+  pais: {
+    create: new PaisCreate(paisRepository),
+    update: new PaisEdit(paisRepository),
+    delete: new PaisDelete(paisRepository),
+    getAll: new PaisGetAll(paisRepository),
+    getOneById: new PaisGetOneById(paisRepository),
+  },
+  idioma: {
+    create: new IdiomaCreate(idiomaRepository),
+    update: new IdiomaEdit(idiomaRepository),
+    delete: new IdiomaDelete(idiomaRepository),
+    getAll: new IdiomaGetAll(idiomaRepository),
+    getOneById: new IdiomaGetOneById(idiomaRepository),
+  },
+};
