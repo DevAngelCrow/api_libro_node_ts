@@ -10,4 +10,14 @@ export class FormatoLibro{
         readonly estado: FormatoLibroEstado,
         readonly id?: FormatoLibroId,
     ){}
+
+    public mapToPrimitives(){
+        return {
+            id: this.id?.value,
+            formato: this.formato.value,
+            manufactura: this.manufactura.value ,
+            estado: this.estado.value,
+
+        }
+    }
 }

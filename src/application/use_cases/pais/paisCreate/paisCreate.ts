@@ -10,7 +10,7 @@ export class PaisCreate{
         abreviacion: string,
         codigo: string,
         estado: boolean = true,
-    ){
+    ):Promise<void>{
         return this.repository.create(new Pais(
             new PaisNombre(nombre),
             new PaisAbreviacion(abreviacion),

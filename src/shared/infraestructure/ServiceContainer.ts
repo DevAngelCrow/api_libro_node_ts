@@ -1,3 +1,4 @@
+import { create } from "domain";
 import {
   AutorGetOneById,
   EditorialCreate,
@@ -5,11 +6,26 @@ import {
   EditorialEdit,
   EditorialGetAll,
   EditorialGetOneById,
+  FormatoLibroCreate,
+  FormatoLibroDelete,
+  FormatoLibroEdit,
+  FormatoLibroGetAll,
+  FormatoLibroGetOneById,
+  GeneroCreate,
+  GeneroDelete,
+  GeneroEdit,
+  GeneroGetAll,
+  GeneroGetOneById,
   PaisCreate,
   PaisDelete,
   PaisEdit,
   PaisGetAll,
   PaisGetOneById,
+  TipoEditorialCreate,
+  TipoEditorialDelete,
+  TipoEditorialEdit,
+  TipoEditorialGetAll,
+  TipoEditorialGetOneById,
 } from "../../application/use_cases";
 import { AutorCreate } from "../../application/use_cases/autor/autorCreate/autorCreate";
 import { AutorDelete } from "../../application/use_cases/autor/autorDelete/autorDelete";
@@ -33,12 +49,18 @@ import { ImplEditorialRepository } from "../../infrastructure/implementation/edi
 import { ImplIdiomaRepository } from "../../infrastructure/implementation/idiomaRepository/impl.IdiomaRepository";
 import { ImplLibroRepository } from "../../infrastructure/implementation/libroRepository/impl.LibroRepository";
 import { ImplPaisRepository } from "../../infrastructure/implementation/paisRepository/impl.PaisRepository";
+import { ImplTipoEditorialRepository } from "../../infrastructure/implementation/tipoEditorialRepository/impl.TipoEditorialRepository";
+import { ImplGeneroRepository } from "../../infrastructure/implementation/generoRepository/impl.GeneroRepository";
+import { ImplFormatoLibroRepository } from "../../infrastructure/implementation/formatoLibroRepository/impl.FormatoLibroRepository";
 
 const libroRepository = new ImplLibroRepository();
 const autorRepository = new ImplAutorRepository();
 const editorialRepository = new ImplEditorialRepository();
 const paisRepository = new ImplPaisRepository();
 const idiomaRepository = new ImplIdiomaRepository();
+const tipoEditorialRepository = new ImplTipoEditorialRepository();
+const generoRepository = new ImplGeneroRepository();
+const formatoLibroRepository = new ImplFormatoLibroRepository();
 
 export const ServiceContainer = {
   libro: {
@@ -79,4 +101,25 @@ export const ServiceContainer = {
     getAll: new IdiomaGetAll(idiomaRepository),
     getOneById: new IdiomaGetOneById(idiomaRepository),
   },
+  tipo_Editorial:{
+    create: new TipoEditorialCreate(tipoEditorialRepository),
+    update: new TipoEditorialEdit(tipoEditorialRepository),
+    delete: new TipoEditorialDelete(tipoEditorialRepository),
+    getAll: new TipoEditorialGetAll(tipoEditorialRepository),
+    getOneById: new TipoEditorialGetOneById(tipoEditorialRepository)
+  },
+  genero: {
+    create: new GeneroCreate(generoRepository),
+    update: new GeneroEdit(generoRepository),
+    delete: new GeneroDelete(generoRepository),
+    getAll: new GeneroGetAll(generoRepository),
+    getOneById: new GeneroGetOneById(generoRepository),
+  },
+  formato_libro: {
+    create: new FormatoLibroCreate(formatoLibroRepository),
+    update: new FormatoLibroEdit(formatoLibroRepository),
+    delete: new FormatoLibroDelete(formatoLibroRepository),
+    getAll: new FormatoLibroGetAll(formatoLibroRepository),
+    getOneById: new FormatoLibroGetOneById(formatoLibroRepository),
+  }
 };

@@ -10,4 +10,13 @@ export class Genero {
         readonly estado: GeneroEstado,
         readonly id?: GeneroId,
     ){}
+
+    public mapToPrimitives(){
+        return {
+            id: this.id?.value,
+            nombre: this.nombre.value,
+            descripcion: this.descripcion.value,
+            estado: this.estado.value,
+        }
+    }
 }
