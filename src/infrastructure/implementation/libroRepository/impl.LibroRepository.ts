@@ -64,6 +64,7 @@ export class ImplLibroRepository implements LibroRepository {
         data: prismaData,
       });
     } catch (error) {
+      console.log(error, 'error al crear')
       throw CustomError.internalServer("Error interno del servidor");
     }
   }
@@ -395,6 +396,7 @@ export class ImplLibroRepository implements LibroRepository {
       const imageUrl = `https://drive.google.com/uc?id=${fileId}`;
       return new LibroPortada(imageUrl);
     } catch (error) {
+      console.log(error, 'error google')
       throw CustomError.internalServer("Error en la peticion de google Drive");
     }
   }
@@ -416,6 +418,7 @@ export class ImplLibroRepository implements LibroRepository {
       const valorStream: Buffer = await this.readStream(imgFile.data);
       return valorStream;
     } catch (error) {
+      console.log(error, 'getImgPortada')
       throw error;
     }
   }
@@ -457,6 +460,7 @@ export class ImplLibroRepository implements LibroRepository {
 
       return new LibroPortada(imagenUrlEdit);
     } catch (error) {
+      console.log(error, 'error al crear url de la portada')
       throw CustomError.internalServer(
         "Error al editar la imagen multimedia en Google Drive"
       );

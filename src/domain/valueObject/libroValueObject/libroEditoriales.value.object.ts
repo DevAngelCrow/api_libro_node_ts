@@ -1,3 +1,5 @@
 export class LibroEditoriales{
-    constructor(readonly value: Array<number>){}
+    constructor(readonly value: Array<number>){
+        
+    }
 }
