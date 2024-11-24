@@ -22,7 +22,6 @@ import {
 } from "../../../domain/valueObject";
 import { CustomError } from "../../../domain";
 import { ConvertToPrismaData } from "./converToPrismaData";
-import { where } from "sequelize";
 type PostgresEditorial = {
   id: number;
   nombre: string;

@@ -21,7 +21,7 @@ model ctl_genero {
   id          Int         @id(map: "ctl_genero_pk") @default(autoincrement())
   nombre      String      @db.VarChar
   descripcion String?     @db.VarChar
-  estado      Boolean
+  estado      Boolean     @default(true)
   created_at  DateTime    @default(now()) @db.Timestamp(6)
   updated_at  DateTime?   @db.Timestamp(6)
   mnt_libro   mnt_libro[]
@@ -130,6 +130,6 @@ model mnt_libro_editorial {
   created_at    DateTime?     @default(now()) @db.Timestamp(6)
   updated_at    DateTime?     @db.Timestamp(6)
   estado        Boolean       @default(true)
-  mnt_editorial mnt_editorial @relation(fields: [id_editorial], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_editorial_mnt_editorial_fk")
-  mnt_libro     mnt_libro     @relation(fields: [id_libro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mnt_libro_editorial_mnt_libro_fk")
+  mnt_editorial mnt_editorial @relation(fields: [id_editorial], references: [id], onDelete: Cascade, map: "mnt_libro_editorial_mnt_editorial_fk")
+  mnt_libro     mnt_libro     @relation(fields: [id_libro], references: [id], onDelete: Cascade, map: "mnt_libro_editorial_mnt_libro_fk")
 }

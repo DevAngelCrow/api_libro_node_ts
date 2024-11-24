@@ -12,7 +12,7 @@ export class AutorCreate{
         id_nacionalidad: number,
         telefono: string,
         email: string,
-        estado: boolean,
+        estado: boolean = true,
         libros: Array<number>
      ) : Promise<void> {
         const autor = new Autor(
