@@ -123,7 +123,8 @@ export class ImplAutorRepository implements AutorRepository {
         await this.updateLibroAutor(tx, id?.value!, autor.libros?.value!);
       });
     } catch (error) {
-      throw CustomError.internalServer("Error interno en el servidor");
+      console.log(error, 'error en actualizar')
+      throw CustomError.internalServer("Error interno en el servidor al actualizar el autor");
     }
   }
   async delete(id: AutorId): Promise<void> {
@@ -137,7 +138,7 @@ export class ImplAutorRepository implements AutorRepository {
         }
       });
     } catch (error) {
-      throw CustomError.internalServer("Error interno en el servidor")
+      throw CustomError.internalServer("Error interno en el servidor al eliminar el autor")
     }
   }
 
