@@ -21,6 +21,7 @@ export class AppRoutes {
         router.use('/api/genero', GeneroRoutes.routes);
         router.use('/api/formato-libro', FormatoLibroRoutes.routes);
         
+        
         return router;
     }
 }

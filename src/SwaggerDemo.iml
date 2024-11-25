@@ -1,0 +1,23 @@
+{
+  "name": "swaggerdemo",
+  "version": "1.0.0",
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "@types/swagger-ui-express": "^5.0.1",
+    "express": "^4.21.1",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1",
+    "ts-node": "^10.9.2"
+  },
+  "main": "dist/app.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon",
+    "build": "tsc",
+    "prepublish": "npm run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

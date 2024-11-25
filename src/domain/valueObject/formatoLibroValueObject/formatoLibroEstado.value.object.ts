@@ -5,7 +5,8 @@ export class FormatoLibroEstado {
         this.required();
     }
     private required(){
-        if(!this.value){
+        console.log(typeof this.value)
+        if(!this.value &&  typeof this.value !== "boolean"){
             throw CustomError.badRequest("El campo estado es obligatorio")
         }
     }

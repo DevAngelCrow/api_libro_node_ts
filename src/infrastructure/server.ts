@@ -1,5 +1,7 @@
 import express, { Router } from 'express';
 import path from 'path';
+import swaggerUi from 'swagger-ui-express';
+import swaggerOutput from './swagger_output.json';
 
 interface Options{
     port: number;
@@ -36,6 +38,8 @@ export class Server{
         //Por este linea pasaran todas las rutas a utilizar de nuestra api
         this.app.use(this.routes);
 
+        //this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOutput));
+        
         this.app.get('*', (req, response) => {
             const indexPath = path.join(__dirname + `../../../${this.publicPath}/index.html`);
             response.sendFile(indexPath);

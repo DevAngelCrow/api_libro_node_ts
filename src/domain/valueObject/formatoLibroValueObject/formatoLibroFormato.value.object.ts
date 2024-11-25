@@ -6,7 +6,7 @@ export class FormatoLibroFormato{
     }
     private required(){
         if(!this.value){
-            throw CustomError.badRequest("El campo formato es obligatorio")
+            throw CustomError.badRequest("El campo formato es obligatorio");
         }
     }
 }

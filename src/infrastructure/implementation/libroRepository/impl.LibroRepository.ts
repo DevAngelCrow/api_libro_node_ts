@@ -95,9 +95,11 @@ export class ImplLibroRepository implements LibroRepository {
       this.libros = librosBd.map((libro) => {
         return this.mapToDomain(libro);
       });
+      console.log(this.libros, 'libros')
       return this.libros;
     } catch (error) {
-      throw CustomError.internalServer("Error interno del servidor");
+      console.log(error)
+      throw CustomError.internalServer("Error interno del servidor al obtener libros");
     }
   }
   async getOneById(id: LibroId): Promise<Libro | null> {
@@ -487,6 +489,7 @@ export class ImplLibroRepository implements LibroRepository {
     libro: PostgresLibro,
     portada_multimedia?: Buffer
   ): Libro {
+    console.log(libro.ctl_idioma, 'idioma')
     return new Libro(
       new LibroNombre(libro.nombre),
       new LibroFechaPublicacion(libro.fecha_publicacion),
@@ -505,17 +508,17 @@ export class ImplLibroRepository implements LibroRepository {
         new GeneroId(libro?.ctl_genero?.id)
       ),
       new FormatoLibro(
-        new FormatoLibroFormato(libro?.ctl_formato_libro?.nombre),
-        new FormatoLibroManufactura(libro?.ctl_formato_libro?.manufactura),
-        new FormatoLibroEstado(libro?.ctl_formato_libro?.estado),
-        new FormatoLibroId(libro?.ctl_formato_libro?.id)
+        new FormatoLibroFormato(libro?.ctl_formato_libro?.formato!),
+        new FormatoLibroManufactura(libro?.ctl_formato_libro?.manufactura!),
+        new FormatoLibroEstado(libro?.ctl_formato_libro?.estado!),
+        new FormatoLibroId(libro?.ctl_formato_libro?.id!)
       ),
       new Idioma(
-        new IdiomaIdioma(libro?.ctl_idioma?.idioma),
-        new IdiomaAbreviatura(libro?.ctl_genero?.abreviatura),
-        new IdiomaRegion(libro?.ctl_genero?.region),
-        new IdiomaEstado(libro?.ctl_genero?.estado),
-        new IdiomaId(libro?.ctl_idioma?.id)
+        new IdiomaIdioma(libro?.ctl_idioma?.idioma!),
+        new IdiomaAbreviatura(libro?.ctl_idioma?.abreviatura!),
+        new IdiomaRegion(libro?.ctl_idioma?.region!),
+        new IdiomaEstado(libro?.ctl_idioma?.estado!),
+        new IdiomaId(libro?.ctl_idioma?.id!)
       ),
       new LibroId(libro.id),
       portada_multimedia
