@@ -1,8 +1,9 @@
 import express, { Router } from 'express';
 import path from 'path';
 import swaggerUi from 'swagger-ui-express';
-import swaggerOutput from './swagger_output.json';
-
+import fs from 'fs';
+import YAML from 'yaml';
+//import swaggerOutput from './swagger_output.json';
 interface Options{
     port: number;
     routes: Router,
@@ -37,8 +38,8 @@ export class Server{
 
         //Por este linea pasaran todas las rutas a utilizar de nuestra api
         this.app.use(this.routes);
-
-        //this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOutput));
+        const archivosYaml = fs.readFileSync('./src/swagger/index.yaml', 'utf-8');
+        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(YAML.parse(fs.readFileSync('./src/swagger/index.yaml', 'utf-8'))));
         
         this.app.get('*', (req, response) => {
             const indexPath = path.join(__dirname + `../../../${this.publicPath}/index.html`);

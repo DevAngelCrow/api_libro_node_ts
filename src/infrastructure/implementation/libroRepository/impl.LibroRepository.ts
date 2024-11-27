@@ -60,6 +60,7 @@ export class ImplLibroRepository implements LibroRepository {
   async create(libro: Libro): Promise<void> {
     try {
       const prismaData = new ConvertToPrismaData().mntLibroToPrisma(libro);
+      console.log(prismaData, 'prismaData');
       await this.prisma.mnt_libro.create({
         data: prismaData,
       });

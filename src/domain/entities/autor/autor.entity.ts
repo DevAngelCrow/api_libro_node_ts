@@ -33,6 +33,7 @@ export class Autor {
     return {
     id: this.id?.value,
     nombre: this.nombres.value,
+    apellido: this.apellidos.value,
     fecha_nacimiento: fecha.toFormat('dd-MM-yyyy'),
     ctl_nacionalidad: this.mapToPrimitiveNacionalidad(),
     telefono: this.telefono.value,
