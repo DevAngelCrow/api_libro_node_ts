@@ -19,31 +19,31 @@
         content:
           application/json:
             schema:
-              $ref: "#/components"
+              $ref: "#/components/schemas/Libro"
       400:
         description: Bad Request
         content:
           application/json:
             schema:
-              $ref: "./components/schemas/LibroSchema"
+              $ref: "#/components/schemas/Libro"
       401:
         description: Unauthorized
         content:
           application/json:
             schema:
-              $ref: "./components/schemas/LibroSchema"
+              $ref: "#/components/schemas/Libro"
       403:
         description: Forbidden
         content:
           application/json:
             schema:
-              $ref: "./components/schemas/LibroSchema"
+              $ref: "#/components/schemas/Libro"
       500:
         description: Internal Server Error
         content:
           application/json:
             schema:
-              $ref: "./components/schemas/LibroSchema"
+              $ref: "#/components/schemas/Libro"
 /api/autor/create:
   post:
     tags:
@@ -55,58 +55,11 @@
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              nombre:
-                type: string
-              apellido:
-                type: string
-              fecha_publicacion:
-                type: string
-              id_ingreso:
-                type: integer
-              edicion:
-                type: string
-              portada:
-                type: string
-              id_formato_libro:
-                type: integer
-              estado:
-                type: boolean
-              id_idioma:
-                type: integer
-              resumen:
-                type: string
-              numero_paginas:
-                type: integer
+            $ref: "#/components/schemas/Libro"
     responses:
       201:
         description: Autor creado
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                nombre:
-                  type: string
-                apellido:
-                  type: string
-                fecha_publicacion:
-                  type: string
-                id_ingreso:
-                  type: integer
-                edicion:
-                  type: string
-                portada:
-                  type: string
-                id_formato_libro:
-                  type: integer
-                estado:
-                  type: boolean
-                id_idioma:
-                  type: integer
-                resumen:
-                  type: string
-                numero_paginas:
-                  type: integer
-
+              $ref: "#/components/schemas/Libro"

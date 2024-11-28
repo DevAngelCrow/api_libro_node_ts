@@ -1,6 +1,4 @@
 type: object
 properties:
-  key:
-    type: string
   message:
     type: string

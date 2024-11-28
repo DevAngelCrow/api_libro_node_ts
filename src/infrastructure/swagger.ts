@@ -1,6 +1,6 @@
 import { envs } from "./config/envs";
 //import swaggerAutogen from 'swagger-autogen';
-import fs, { writeFile } from "fs";
+import fs, { copyFileSync, writeFile } from "fs";
 import YAML from "yaml";
 
 const options = {
@@ -24,16 +24,25 @@ const options = {
 };
 
 const arregloSwaggerPaths = fs.readdirSync("./src/swagger/paths");
+const arregloSwaggerSchemas = fs.readdirSync(
+  "./src/swagger/components/schemas"
+);
+console.log(arregloSwaggerSchemas, "schemas");
 const directorio = "./src/swagger/paths";
+const directorioSchema = "./src/swagger/components/schemas";
 const dirPaths: any[] = [];
+const dirSchemas: any[] = [];
+
 arregloSwaggerPaths.forEach((pathYml) => {
-  
-  
-    dirPaths.push(`${directorio}/${pathYml}`);
-  
+  dirPaths.push(`${directorio}/${pathYml}`);
 });
 
+arregloSwaggerSchemas.forEach((schemaYml) => {
+  dirSchemas.push(`${directorioSchema}/${schemaYml}`);
+});
 let data: string = YAML.stringify(options.definition) + "\n" + "paths:" + "\n";
+const schemasArray: any = [];
+
 dirPaths.map((directorio, index) => {
   const fileContent = `${fs
     .readFileSync(directorio, "utf-8")
@@ -41,32 +50,21 @@ dirPaths.map((directorio, index) => {
     .map((line) => `  ${line}`)
     .join("\n")}`;
   data += `${fileContent}\n`;
-
-  // if (dirPaths.length === index + 1) {
-  //   const componentes = {
-  //     components: {
-  //       schemas: {
-  //         "$include": "./swagger/components/schemas/schemas.yaml",
-  //       },
-  //     },
-  //   };
-
-  //   data += YAML.stringify(componentes);
-  // }
+});
+data += "components:\n  schemas:\n";
+dirSchemas.map((directorio, index) => {
+  const nombreSchema = arregloSwaggerSchemas[index].split("Schema.yml");
+  data += `    ${nombreSchema[0]}:\n`;
+  const fileContent = `${fs
+    .readFileSync(directorio, "utf-8")
+    .split("\n")
+    .map((line) => `      ${line}`)
+    .join("\n")}`;
+  data += `${fileContent}\n`;
 });
 
-
-
-fs.writeFile("./src/swagger/index.yaml", data, (error) => {
-  if (error) {
-    console.log("Error al escribir en el archivo index", error);
-  }
-  return;
-});
+fs.writeFileSync("./src/swagger/index.yaml", data, "utf-8");
 
 const archivosYaml = fs.readFileSync("./src/swagger/index.yaml", "utf-8");
-//const swaggerDocument = YAML.parse(archivosYaml);
 
 export { archivosYaml };
-
-//swaggerAutogen({openapi: '3.0.0'})(outputFile,[], swaggerDocument);

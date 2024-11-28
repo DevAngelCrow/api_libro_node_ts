@@ -1,0 +1,24 @@
+type: object
+properties:
+  nombre:
+    type: string
+  apellido:
+    type: string
+  fecha_publicacion:
+    type: string
+  id_ingreso:
+    type: integer
+  edicion:
+    type: string
+  portada:
+    type: string
+  id_formato_libro:
+    type: integer
+  estado:
+    type: boolean
+  id_idioma:
+    type: integer
+  resumen:
+    type: string
+  numero_paginas:
+    type: integer
