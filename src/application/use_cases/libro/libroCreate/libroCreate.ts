@@ -33,13 +33,13 @@ export class LibroCreate {
     editoriales: Array<number>
   ): Promise<void> {
     const urlImagenPortada = await this.repository.createUrlPortada(portada);
-
     if (typeof estado === "string" && estado === "true") {
       estado = true;
     } else {
       estado = false;
     }
 
+    
     const libro = new Libro(
       new LibroNombre(nombre),
       new LibroFechaPublicacion(fecha_publicacion),

@@ -6,5 +6,6 @@ export interface AutorRepository{
     getAll() : Promise<Autor[]>;
     getOneById(id: AutorId) : Promise<Autor | null>;
     update(autor: Autor) : Promise<void>
-    delete(id: AutorId) : Promise<void>
+    delete(id: AutorId) : Promise<void>;
+    findGroup(idAutores: Array<number>) : Promise<Array<number> | null>
 }

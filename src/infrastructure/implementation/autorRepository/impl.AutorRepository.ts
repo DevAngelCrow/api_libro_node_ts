@@ -123,7 +123,6 @@ export class ImplAutorRepository implements AutorRepository {
         await this.updateLibroAutor(tx, id?.value!, autor.libros?.value!);
       });
     } catch (error) {
-      console.log(error, 'error en actualizar')
       throw CustomError.internalServer("Error interno en el servidor al actualizar el autor");
     }
   }
@@ -139,6 +138,31 @@ export class ImplAutorRepository implements AutorRepository {
       });
     } catch (error) {
       throw CustomError.internalServer("Error interno en el servidor al eliminar el autor")
+    }
+  }
+
+  async findGroup(idAutores: Array<number>): Promise<Array<number> | null> {
+    try {
+      const idAutoresFormat = idAutores.map((id)=> +id);
+      const autoresInexistentes = await this.prisma.$queryRaw<{[key:string]:any}[]>`WITH id_autores AS (SELECT UNNEST(ARRAY[${idAutoresFormat}]) AS ID)
+      SELECT ID
+      FROM id_autores
+      EXCEPT
+      SELECT id
+      FROM mnt_autor`;
+
+      const formatAutoresId = autoresInexistentes.map((autor) => autor.id);
+
+      if(formatAutoresId.length){
+        let cadena = "Los siguientes 'ids' de autores no existen en los registros de la base de datos";
+
+        formatAutoresId.forEach((id)=> cadena += ` ${id} `);
+
+        throw CustomError.badRequest(cadena);
+      }
+      return formatAutoresId;
+    } catch (error) {
+      throw error;
     }
   }
 

@@ -52,6 +52,7 @@ import { ImplPaisRepository } from "../../infrastructure/implementation/paisRepo
 import { ImplTipoEditorialRepository } from "../../infrastructure/implementation/tipoEditorialRepository/impl.TipoEditorialRepository";
 import { ImplGeneroRepository } from "../../infrastructure/implementation/generoRepository/impl.GeneroRepository";
 import { ImplFormatoLibroRepository } from "../../infrastructure/implementation/formatoLibroRepository/impl.FormatoLibroRepository";
+import { AutorFindGroup } from "../../application/use_cases/autor/autorFindGroup/autorFindGroup";
 
 const libroRepository = new ImplLibroRepository();
 const autorRepository = new ImplAutorRepository();
@@ -79,6 +80,7 @@ export const ServiceContainer = {
     delete: new AutorDelete(autorRepository),
     getAll: new AutorGetAll(autorRepository),
     getOneById: new AutorGetOneById(autorRepository),
+    findGroup: new AutorFindGroup(autorRepository)
   },
   editorial: {
     create: new EditorialCreate(editorialRepository),

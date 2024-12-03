@@ -35,6 +35,8 @@ import { Idioma } from "../../../domain/entities/idioma/idioma.entity";
 import drive from "../../config/googleDrive";
 import { Readable } from "stream";
 import { LibroPortadaMultimedia } from "../../../domain/valueObject/libroValueObject/libroPortadaMultimedia.value.object";
+import {  PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+
 
 type PostgresLibro = {
   id: number;
@@ -60,13 +62,15 @@ export class ImplLibroRepository implements LibroRepository {
   async create(libro: Libro): Promise<void> {
     try {
       const prismaData = new ConvertToPrismaData().mntLibroToPrisma(libro);
-      console.log(prismaData, 'prismaData');
       await this.prisma.mnt_libro.create({
         data: prismaData,
       });
-    } catch (error) {
-      console.log(error, 'error al crear')
-      throw CustomError.internalServer("Error interno del servidor");
+    } catch (error: any) {
+      console.log(error, 'erro');
+      if(error instanceof PrismaClientKnownRequestError){
+        console.log(error.code, 'este es el código de error')
+      }
+      throw CustomError.internalServer("Error interno del servidor al crear un registro de libro");
     }
   }
   async getAll(): Promise<Libro[]> {
