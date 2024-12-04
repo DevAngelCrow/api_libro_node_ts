@@ -69,7 +69,7 @@ export const ServiceContainer = {
     getOneById: new LibroGetOneById(libroRepository),
     delete: new LibroDelete(libroRepository),
     update: new LibroEdit(libroRepository),
-    create: new LibroCreate(libroRepository),
+    create: new LibroCreate(libroRepository, autorRepository),
     createUrlPortada: new LibroImagenUrlCreate(libroRepository),
     getImageFile: new LibroGetFileImage(libroRepository),
     editImageFile: new LibroEditImage(libroRepository),

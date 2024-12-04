@@ -20,9 +20,7 @@ export class LibroController {
     const portada = request.file!;
 
     const formato_fecha = new Date(fecha_publicacion);
-    await ServiceContainer.autor.findGroup.run(autores).catch((error) => {
-      response.status(error.statusCode).json({message: error.message})
-    })
+
     await ServiceContainer.libro.create
       .run(
         nombre,

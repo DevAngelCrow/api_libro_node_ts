@@ -1,5 +1,6 @@
+import { CustomError } from "../../../../domain";
 import { Libro } from "../../../../domain/entities/libro/libros.entity";
-import { LibroRepository } from "../../../../domain/repositories/index";
+import { AutorRepository, LibroRepository } from "../../../../domain/repositories/index";
 import {
   LibroAutores,
   LibroEdicion,
@@ -16,7 +17,7 @@ import {
 } from "../../../../domain/valueObject";
 
 export class LibroCreate {
-  constructor(private repository: LibroRepository) {}
+  constructor(private repository: LibroRepository, private repositoryAutor: AutorRepository) {}
 
   async run(
     nombre: string,
@@ -32,6 +33,9 @@ export class LibroCreate {
     autores: Array<number>,
     editoriales: Array<number>
   ): Promise<void> {
+
+    await this.repositoryAutor.findGroup(autores);
+
     const urlImagenPortada = await this.repository.createUrlPortada(portada);
     if (typeof estado === "string" && estado === "true") {
       estado = true;

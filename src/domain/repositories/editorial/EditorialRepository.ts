@@ -6,5 +6,5 @@ export interface EditorialRepository {
     getAll():Promise<Editorial[]>;
     getOneById(id: EditorialId):Promise<Editorial | null>;
     update(editorial: Editorial):Promise<void>;
-    delete(id: EditorialId):Promise<void>
+    delete(id: EditorialId):Promise<void>;
 }
