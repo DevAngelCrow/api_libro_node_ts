@@ -65,11 +65,7 @@ export class ImplLibroRepository implements LibroRepository {
       await this.prisma.mnt_libro.create({
         data: prismaData,
       });
-    } catch (error: any) {
-      console.log(error, 'erro');
-      if(error instanceof PrismaClientKnownRequestError){
-        console.log(error.code, 'este es el código de error')
-      }
+    } catch (error) {
       throw CustomError.internalServer("Error interno del servidor al crear un registro de libro");
     }
   }
