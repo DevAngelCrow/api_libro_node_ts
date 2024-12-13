@@ -14,7 +14,7 @@ export class LibroAutores{
 
     private verifyArray(){
         if(!this.value.length){
-            throw CustomError.badRequest("El libro debe tener al menus un autor");
+            throw CustomError.badRequest("El libro debe tener al menos un autor");
         }
         this.value.forEach((id) => {
             if(+id === 0){

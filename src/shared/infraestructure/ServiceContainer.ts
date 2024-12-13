@@ -75,7 +75,7 @@ export const ServiceContainer = {
     editImageFile: new LibroEditImage(libroRepository),
   },
   autor: {
-    create: new AutorCreate(autorRepository),
+    create: new AutorCreate(autorRepository, paisRepository),
     update: new AutorEdit(autorRepository),
     delete: new AutorDelete(autorRepository),
     getAll: new AutorGetAll(autorRepository),

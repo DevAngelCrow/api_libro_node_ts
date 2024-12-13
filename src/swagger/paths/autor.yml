@@ -19,31 +19,31 @@
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Libro"
+              $ref: "#/components/schemas/Autor"
       400:
         description: Bad Request
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Libro"
+              $ref: "#/components/schemas/Autor"
       401:
         description: Unauthorized
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Libro"
+              $ref: "#/components/schemas/Autor"
       403:
         description: Forbidden
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Libro"
+              $ref: "#/components/schemas/Autor"
       500:
         description: Internal Server Error
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Libro"
+              $ref: "#/components/schemas/Autor"
 /api/autor/create:
   post:
     tags:
@@ -55,11 +55,36 @@
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Libro"
+            $ref: "#/components/schemas/Autor"
     responses:
       201:
         description: Autor creado
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Libro"
+              $ref: "#/components/schemas/Autor"
+      400:
+        description: Bad Request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Autor"
+      401:
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Autor"
+      403:
+        description: Forbidden
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Autor"
+      500:
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Autor"
+      

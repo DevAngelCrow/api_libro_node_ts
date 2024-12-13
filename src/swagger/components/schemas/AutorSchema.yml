@@ -1,0 +1,22 @@
+type: object
+properties:
+  nombres:
+    type: string
+  apellidos:
+    type: string
+  fecha_nacimiento:
+    type: string
+    format: date
+  id_nacionalidad:
+    type: integer
+  telefono:
+    type: string
+  email:
+    type: string
+  estado:
+    type: boolean
+  libros:
+    type: array
+    items:
+      type: integer
+  

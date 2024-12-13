@@ -31,31 +31,31 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Libro"
+                $ref: "#/components/schemas/Autor"
         400:
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Libro"
+                $ref: "#/components/schemas/Autor"
         401:
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Libro"
+                $ref: "#/components/schemas/Autor"
         403:
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Libro"
+                $ref: "#/components/schemas/Autor"
         500:
           description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Libro"
+                $ref: "#/components/schemas/Autor"
   /api/autor/create:
     post:
       tags:
@@ -67,16 +67,64 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Libro"
+              $ref: "#/components/schemas/Autor"
       responses:
         201:
           description: Autor creado
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Libro"
+                $ref: "#/components/schemas/Autor"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Autor"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Autor"
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Autor"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Autor"
+        
 components:
   schemas:
+    Autor:
+      type: object
+      properties:
+        nombres:
+          type: string
+        apellidos:
+          type: string
+        fecha_nacimiento:
+          type: string
+          format: date
+        id_nacionalidad:
+          type: integer
+        telefono:
+          type: string
+        email:
+          type: string
+        estado:
+          type: boolean
+        libros:
+          type: array
+          items:
+            type: integer
+        
     Error:
       type: object
       properties:

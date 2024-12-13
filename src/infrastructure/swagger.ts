@@ -1,6 +1,6 @@
 import { envs } from "./config/envs";
 //import swaggerAutogen from 'swagger-autogen';
-import fs, { copyFileSync, writeFile } from "fs";
+import fs, { writeFile } from "fs";
 import YAML from "yaml";
 
 const options = {

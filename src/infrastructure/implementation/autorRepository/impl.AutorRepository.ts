@@ -43,7 +43,7 @@ export class ImplAutorRepository implements AutorRepository {
         data: prismaValues,
       });
     } catch (error) {
-      throw CustomError.internalServer("Error interno del servidor");
+      throw CustomError.internalServer("Error interno del servidor al crear el autor");
     }
   }
   async getAll(): Promise<Autor[]> {

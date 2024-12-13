@@ -1,9 +1,10 @@
+import { CustomError } from "../../../../domain";
 import { Autor } from "../../../../domain/entities";
-import { AutorRepository } from "../../../../domain/repositories";
-import { AutorApellidos, AutorEmail, AutorEstado, AutorFechaNacimiento, AutorIdNacionalidad, AutorLibros, AutorNombres, AutorTelefono } from "../../../../domain/valueObject";
+import { AutorRepository, PaisRepository } from "../../../../domain/repositories";
+import { AutorApellidos, AutorEmail, AutorEstado, AutorFechaNacimiento, AutorIdNacionalidad, AutorLibros, AutorNombres, AutorTelefono, PaisId} from "../../../../domain/valueObject";
 
 export class AutorCreate{
-    constructor(private repository: AutorRepository){}
+    constructor(private repository: AutorRepository, private repositoryNacionalidad: PaisRepository){}
 
      async run(
         nombres: string,
@@ -13,8 +14,15 @@ export class AutorCreate{
         telefono: string,
         email: string,
         estado: boolean = true,
-        libros: Array<number>
+        libros: Array<number> = []
      ) : Promise<void> {
+
+        
+        const pais = await this.repositoryNacionalidad.getOneById(new PaisId(id_nacionalidad));
+        
+        if(!pais){
+            throw CustomError.notFound("El id de la nacionalidad no se encuentra en los registros")
+        }
         const autor = new Autor(
             new AutorNombres(nombres),
             new AutorApellidos(apellidos),
@@ -26,7 +34,7 @@ export class AutorCreate{
             undefined, undefined,
             new AutorLibros(libros),
         )
-
+        
         return this.repository.create(autor);
     }
 }

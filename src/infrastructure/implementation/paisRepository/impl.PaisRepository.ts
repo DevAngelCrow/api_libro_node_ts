@@ -78,6 +78,7 @@ export class ImplPaisRepository implements PaisRepository{
             });
 
             if(!pais){
+                //throw CustomError.notFound("No se encontro el pais papu")
                 return null;
             }
 

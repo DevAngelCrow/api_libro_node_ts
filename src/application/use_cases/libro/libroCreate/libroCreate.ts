@@ -1,6 +1,8 @@
-import { CustomError } from "../../../../domain";
 import { Libro } from "../../../../domain/entities/libro/libros.entity";
-import { AutorRepository, LibroRepository } from "../../../../domain/repositories/index";
+import {
+  AutorRepository,
+  LibroRepository,
+} from "../../../../domain/repositories/index";
 import {
   LibroAutores,
   LibroEdicion,
@@ -17,7 +19,10 @@ import {
 } from "../../../../domain/valueObject";
 
 export class LibroCreate {
-  constructor(private repository: LibroRepository, private repositoryAutor: AutorRepository) {}
+  constructor(
+    private repository: LibroRepository,
+    private repositoryAutor: AutorRepository
+  ) {}
 
   async run(
     nombre: string,
@@ -33,7 +38,6 @@ export class LibroCreate {
     autores: Array<number>,
     editoriales: Array<number>
   ): Promise<void> {
-
     await this.repositoryAutor.findGroup(autores);
 
     const urlImagenPortada = await this.repository.createUrlPortada(portada);
@@ -43,7 +47,6 @@ export class LibroCreate {
       estado = false;
     }
 
-    
     const libro = new Libro(
       new LibroNombre(nombre),
       new LibroFechaPublicacion(fecha_publicacion),

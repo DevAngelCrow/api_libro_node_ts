@@ -35,8 +35,7 @@ import { Idioma } from "../../../domain/entities/idioma/idioma.entity";
 import drive from "../../config/googleDrive";
 import { Readable } from "stream";
 import { LibroPortadaMultimedia } from "../../../domain/valueObject/libroValueObject/libroPortadaMultimedia.value.object";
-import {  PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 type PostgresLibro = {
   id: number;
@@ -66,7 +65,33 @@ export class ImplLibroRepository implements LibroRepository {
         data: prismaData,
       });
     } catch (error) {
-      throw CustomError.internalServer("Error interno del servidor al crear un registro de libro");
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        const tablasForaneas: Array<string> = [
+          "mnt_libro_editorial",
+          "ctl_idioma",
+          "ctl_genero",
+          "mnt_libro_autor",
+          "ctl_formato_libro",
+        ];
+
+        const erroresTablas = tablasForaneas
+          .map((item) => {
+            const mathResult = error?.meta?.cause?.toString().match(item);
+            return mathResult ? mathResult[0] : null;
+          })
+          .filter((result) => result !== null);
+
+        const primerMatch = erroresTablas[0];
+        throw CustomError.badRequest(
+          `El id utilizado no existe en la tabla ${primerMatch}`
+        );
+      }
+      throw CustomError.internalServer(
+        "Error interno del servidor al crear un registro de libro"
+      );
     }
   }
   async getAll(): Promise<Libro[]> {
@@ -96,11 +121,12 @@ export class ImplLibroRepository implements LibroRepository {
       this.libros = librosBd.map((libro) => {
         return this.mapToDomain(libro);
       });
-      console.log(this.libros, 'libros')
       return this.libros;
     } catch (error) {
-      console.log(error)
-      throw CustomError.internalServer("Error interno del servidor al obtener libros");
+      console.log(error);
+      throw CustomError.internalServer(
+        "Error interno del servidor al obtener libros"
+      );
     }
   }
   async getOneById(id: LibroId): Promise<Libro | null> {
@@ -399,7 +425,7 @@ export class ImplLibroRepository implements LibroRepository {
       const imageUrl = `https://drive.google.com/uc?id=${fileId}`;
       return new LibroPortada(imageUrl);
     } catch (error) {
-      console.log(error, 'error google')
+      console.log(error, "error google");
       throw CustomError.internalServer("Error en la peticion de google Drive");
     }
   }
@@ -421,7 +447,7 @@ export class ImplLibroRepository implements LibroRepository {
       const valorStream: Buffer = await this.readStream(imgFile.data);
       return valorStream;
     } catch (error) {
-      console.log(error, 'getImgPortada')
+      console.log(error, "getImgPortada");
       throw error;
     }
   }
@@ -463,7 +489,7 @@ export class ImplLibroRepository implements LibroRepository {
 
       return new LibroPortada(imagenUrlEdit);
     } catch (error) {
-      console.log(error, 'error al crear url de la portada')
+      console.log(error, "error al crear url de la portada");
       throw CustomError.internalServer(
         "Error al editar la imagen multimedia en Google Drive"
       );
@@ -490,7 +516,7 @@ export class ImplLibroRepository implements LibroRepository {
     libro: PostgresLibro,
     portada_multimedia?: Buffer
   ): Libro {
-    console.log(libro.ctl_idioma, 'idioma')
+    console.log(libro.ctl_idioma, "idioma");
     return new Libro(
       new LibroNombre(libro.nombre),
       new LibroFechaPublicacion(libro.fecha_publicacion),
