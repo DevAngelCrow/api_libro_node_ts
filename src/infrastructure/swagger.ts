@@ -27,7 +27,6 @@ const arregloSwaggerPaths = fs.readdirSync("./src/swagger/paths");
 const arregloSwaggerSchemas = fs.readdirSync(
   "./src/swagger/components/schemas"
 );
-console.log(arregloSwaggerSchemas, "schemas");
 const directorio = "./src/swagger/paths";
 const directorioSchema = "./src/swagger/components/schemas";
 const dirPaths: any[] = [];
@@ -66,5 +65,5 @@ dirSchemas.map((directorio, index) => {
 fs.writeFileSync("./src/swagger/index.yaml", data, "utf-8");
 
 const archivosYaml = fs.readFileSync("./src/swagger/index.yaml", "utf-8");
-
+console.log("Documentacion de la API actualizada correctamente")
 export { archivosYaml };

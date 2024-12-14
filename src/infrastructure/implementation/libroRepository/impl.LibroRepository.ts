@@ -21,7 +21,6 @@ import {
   LibroGeneroId,
   LibroId,
   LibroIdFormato,
-  LibroIdIdioma,
   LibroNombre,
   LibroNumeroPaginas,
   LibroPortada,
@@ -31,7 +30,6 @@ import { ConvertToPrismaData } from "./converToPrismaData";
 import { CustomError } from "../../../domain";
 import { Genero } from "../../../domain/entities/genero/genero.entity";
 import { FormatoLibro } from "../../../domain/entities/formato_libro/formatoLibro.entity";
-import { Idioma } from "../../../domain/entities/idioma/idioma.entity";
 import drive from "../../config/googleDrive";
 import { Readable } from "stream";
 import { LibroPortadaMultimedia } from "../../../domain/valueObject/libroValueObject/libroPortadaMultimedia.value.object";
@@ -45,13 +43,11 @@ type PostgresLibro = {
   edicion: string;
   portada: string;
   id_formato_libro: number;
-  id_idioma: number;
   resumen: string;
   numero_paginas: number;
   estado: boolean;
   ctl_formato_libro?: { [key: string]: any };
   ctl_genero?: { [key: string]: any };
-  ctl_idioma?: { [key: string]: any };
 };
 export class ImplLibroRepository implements LibroRepository {
   private libros: Libro[] = [];
@@ -100,7 +96,6 @@ export class ImplLibroRepository implements LibroRepository {
         select: {
           ctl_formato_libro: true,
           ctl_genero: true,
-          ctl_idioma: true,
           id: true,
           nombre: true,
           fecha_publicacion: true,
@@ -109,7 +104,6 @@ export class ImplLibroRepository implements LibroRepository {
           edicion: true,
           portada: true,
           estado: true,
-          id_idioma: true,
           resumen: true,
           numero_paginas: true,
         },
@@ -123,7 +117,6 @@ export class ImplLibroRepository implements LibroRepository {
       });
       return this.libros;
     } catch (error) {
-      console.log(error);
       throw CustomError.internalServer(
         "Error interno del servidor al obtener libros"
       );
@@ -138,7 +131,6 @@ export class ImplLibroRepository implements LibroRepository {
         select: {
           ctl_formato_libro: true,
           ctl_genero: true,
-          ctl_idioma: true,
           id: true,
           nombre: true,
           fecha_publicacion: true,
@@ -147,7 +139,6 @@ export class ImplLibroRepository implements LibroRepository {
           edicion: true,
           portada: true,
           estado: true,
-          id_idioma: true,
           resumen: true,
           numero_paginas: true,
         },
@@ -199,8 +190,10 @@ export class ImplLibroRepository implements LibroRepository {
           id?.value!,
           libro.editoriales?.value!
         );
+        await this.updateLibroIdioma(tx, id?.value!, libro.idiomas?.value!)
       });
     } catch (error) {
+      console.log(error, 'en update')
       if (error instanceof CustomError) {
         throw error;
       } else {
@@ -280,6 +273,7 @@ export class ImplLibroRepository implements LibroRepository {
         });
       }
     } catch (error) {
+      console.log(error, 'error en updateLibroAutor')
       if (error instanceof CustomError) {
         throw error;
       } else {
@@ -368,6 +362,86 @@ export class ImplLibroRepository implements LibroRepository {
         });
       }
     } catch (error) {
+      console.log(error, 'error en updateLibroEditorial')
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        throw CustomError.internalServer(
+          "Error interno en la actualizacion del libro"
+        );
+      }
+    }
+  }
+
+  async updateLibroIdioma(
+    tx: Prisma.TransactionClient,
+    id: number,
+    idIdiomas: Array<number>
+  ) {
+    try {
+      const libros = await tx.mnt_libro_idioma.findMany({
+        where: {
+          id_libro: id,
+        },
+        select: {
+          id: true,
+          id_libro: true,
+          id_idioma: true,
+          estado: true,
+        },
+      });
+
+      const idsExistentes = new Set(libros.map((libro) => libro.id_idioma));
+
+      //este arreglo almacenará los autores que ya estan asociados pero que seran desactivados del libro.
+      const idiomasADesactivar = libros.filter(
+        (libro) => !idIdiomas.includes(libro.id_idioma)
+      );
+
+      //este arreglo almacenará los autores que ya estan asociados pero que seran activados del libro
+      const idiomasReactivar = libros.filter(
+        (libro) => idIdiomas.includes(libro.id_idioma) && libro.estado === false
+      );
+      //este arreglo almacenara los autores que nunca han sido asociados a un libro.
+      const idiomasNuevos = idIdiomas.filter(
+        (idIdioma) => !idsExistentes.has(idIdioma)
+      );
+
+      if (idiomasADesactivar.length) {
+        await tx.mnt_libro_idioma.updateMany({
+          where: {
+            id_libro: id,
+            id_idioma: { in: idiomasADesactivar.map((idioma) => idioma.id_idioma) },
+          },
+          data: {
+            estado: false,
+          },
+        });
+      }
+
+      if (idiomasReactivar.length) {
+        await tx.mnt_libro_idioma.updateMany({
+          where: {
+            id_libro: id,
+            id_idioma: { in: idiomasReactivar.map((idioma) => idioma.id_idioma) },
+          },
+          data: { estado: true},
+        });
+      }
+
+      if (idiomasNuevos.length) {
+        const nuevosRegistros = idiomasNuevos.map((idIdioma) => ({
+          id_libro: id,
+          id_idioma: idIdioma,
+          estado: true,
+        }));
+
+        await tx.mnt_libro_idioma.createMany({
+          data: nuevosRegistros,
+        });
+      }
+    } catch (error) {
+      console.log(error, 'idiomas')
       if (error instanceof CustomError) {
         throw error;
       } else {
@@ -447,7 +521,6 @@ export class ImplLibroRepository implements LibroRepository {
       const valorStream: Buffer = await this.readStream(imgFile.data);
       return valorStream;
     } catch (error) {
-      console.log(error, "getImgPortada");
       throw error;
     }
   }
@@ -516,7 +589,6 @@ export class ImplLibroRepository implements LibroRepository {
     libro: PostgresLibro,
     portada_multimedia?: Buffer
   ): Libro {
-    console.log(libro.ctl_idioma, "idioma");
     return new Libro(
       new LibroNombre(libro.nombre),
       new LibroFechaPublicacion(libro.fecha_publicacion),
@@ -524,7 +596,6 @@ export class ImplLibroRepository implements LibroRepository {
       new LibroEdicion(libro.edicion),
       new LibroPortada(libro.portada),
       new LibroIdFormato(libro.id_formato_libro),
-      new LibroIdIdioma(libro.id_idioma),
       new LibroResumen(libro.resumen),
       new LibroNumeroPaginas(libro.numero_paginas),
       new LibroEstado(libro.estado),
@@ -540,13 +611,13 @@ export class ImplLibroRepository implements LibroRepository {
         new FormatoLibroEstado(libro?.ctl_formato_libro?.estado!),
         new FormatoLibroId(libro?.ctl_formato_libro?.id!)
       ),
-      new Idioma(
-        new IdiomaIdioma(libro?.ctl_idioma?.idioma!),
-        new IdiomaAbreviatura(libro?.ctl_idioma?.abreviatura!),
-        new IdiomaRegion(libro?.ctl_idioma?.region!),
-        new IdiomaEstado(libro?.ctl_idioma?.estado!),
-        new IdiomaId(libro?.ctl_idioma?.id!)
-      ),
+      // new Idioma(
+      //   new IdiomaIdioma(libro?.ctl_idioma?.idioma!),
+      //   new IdiomaAbreviatura(libro?.ctl_idioma?.abreviatura!),
+      //   new IdiomaRegion(libro?.ctl_idioma?.region!),
+      //   new IdiomaEstado(libro?.ctl_idioma?.estado!),
+      //   new IdiomaId(libro?.ctl_idioma?.id!)
+      // ),
       new LibroId(libro.id),
       portada_multimedia
         ? new LibroPortadaMultimedia(portada_multimedia)

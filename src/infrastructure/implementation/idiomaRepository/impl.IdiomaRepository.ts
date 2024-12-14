@@ -95,7 +95,6 @@ export class ImplIdiomaRepository implements IdiomaRepository {
         return this.mapToDomain(({...idioma, region: idioma.region ? idioma.region : ''}));
 
     } catch (error) {
-      console.log(error, 'no se que pasa')
         throw CustomError.internalServer(`Error interno en el servidor al obtener el registro ${id.value}`);
     }
   }

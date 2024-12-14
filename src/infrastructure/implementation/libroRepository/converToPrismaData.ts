@@ -12,7 +12,6 @@ export class ConvertToPrismaData {
       numero_paginas: libro.numero_paginas.value,
       ctl_formato_libro: { connect: { id: libro.id_formato_libro.value } },
       ctl_genero: { connect: { id: libro.id_genero.value } },
-      ctl_idioma: { connect: { id: libro.id_idioma.value } },
       mnt_libro_autor: {
         create: libro.autores?.value.map((autor) => ({
           mnt_autor: { connect: { id: +autor } },
@@ -23,6 +22,11 @@ export class ConvertToPrismaData {
           mnt_editorial: { connect: { id: +editorial } },
         })),
       },
+      mnt_libro_idioma: {
+        create: libro.idiomas?.value.map((idioma) => ({
+          ctl_idioma: { connect: { id: +idioma } }
+        }))
+      }
     };
   }
 }

@@ -79,7 +79,6 @@ export class ImplTipoEditorialRepository implements TipoEditorialRepository{
     }
     async delete(id: TipoEditorialId): Promise<void> {
         try {
-            console.log(id, 'es el id a eliminar')
             await this.prisma.ctl_tipo_editorial.update({
                 where: {
                     id: id.value

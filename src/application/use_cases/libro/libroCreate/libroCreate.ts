@@ -11,7 +11,7 @@ import {
   LibroFechaPublicacion,
   LibroGeneroId,
   LibroIdFormato,
-  LibroIdIdioma,
+  LibroIdiomas,
   LibroNombre,
   LibroNumeroPaginas,
   LibroPortada,
@@ -31,12 +31,12 @@ export class LibroCreate {
     edicion: string,
     portada: Express.Multer.File,
     id_formato_libro: number,
-    id_idioma: number,
     resumen: string,
     numero_paginas: number,
     estado: boolean,
-    autores: Array<number>,
-    editoriales: Array<number>
+    autores: Array<number> = [],
+    editoriales: Array<number> = [],
+    idiomas: Array<number> = [],
   ): Promise<void> {
     await this.repositoryAutor.findGroup(autores);
 
@@ -54,7 +54,6 @@ export class LibroCreate {
       new LibroEdicion(edicion),
       new LibroPortada(urlImagenPortada?.value!),
       new LibroIdFormato(id_formato_libro),
-      new LibroIdIdioma(id_idioma),
       new LibroResumen(resumen),
       new LibroNumeroPaginas(numero_paginas),
       new LibroEstado(estado),
@@ -62,9 +61,9 @@ export class LibroCreate {
       undefined,
       undefined,
       undefined,
-      undefined,
       new LibroAutores(autores),
-      new LibroEditoriales(editoriales)
+      new LibroEditoriales(editoriales),
+      new LibroIdiomas(idiomas)
     );
 
     return this.repository.create(libro);

@@ -1,9 +1,9 @@
-// import { CustomError } from "../../errors/custom.error";
-// export class LibroIdIdioma{
-//     constructor(readonly value: number){
-//         this.required();
-//         this.idIdiomaNumberValid();
-//     }
+import { CustomError } from "../../errors/custom.error";
+export class LibroIdiomas{
+    constructor(readonly value: Array<number>){
+        // this.required();
+        // this.idIdiomaNumberValid();
+    }
 
 //     private idIdiomaNumberValid() {
 //     if (isNaN(this.value)) {
@@ -21,4 +21,4 @@
 //       );
 //     }
 //   }
-// }
+}

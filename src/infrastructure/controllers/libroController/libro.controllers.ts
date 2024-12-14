@@ -10,11 +10,11 @@ export class LibroController {
       edicion,
       id_formato_libro,
       estado,
-      id_idioma,
       resumen,
       numero_paginas,
       autores,
       editoriales,
+      idiomas,
     } = request.body;
 
     const portada = request.file!;
@@ -29,12 +29,12 @@ export class LibroController {
         edicion,
         portada,
         +id_formato_libro,
-        +id_idioma,
         resumen,
         +numero_paginas,
         estado,
         autores,
-        editoriales
+        editoriales,
+        idiomas
       )
       .then(() =>
         response.status(201).send({ message: "Libro creado exitosamente" })
@@ -53,12 +53,12 @@ export class LibroController {
       portada,
       id_formato_libro,
       estado,
-      id_idioma,
       resumen,
       numero_paginas,
       portada_multimedia,
       autores,
       editoriales,
+      idiomas
     } = request.body;
 
     const { id } = request.params;
@@ -74,12 +74,12 @@ export class LibroController {
         portada,
         id_formato_libro,
         estado,
-        id_idioma,
         resumen,
         numero_paginas,
         portada_multimedia,
         autores,
-        editoriales
+        editoriales,
+        idiomas
       )
       .then(() =>
         response.status(200).json({
@@ -166,7 +166,6 @@ export class LibroController {
         response.status(200).send({ message: "Portada editada exitosamente" })
       )
       .catch((error) => {
-        console.log(error);
         return response
           .status(error.statusCode)
           .json({ message: error.message });

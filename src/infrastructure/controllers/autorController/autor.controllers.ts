@@ -13,7 +13,6 @@ export class AutorController {
       estado,
       libros
     } = request.body;
-    console.log(libros, 'libros')
     const fecha = new Date(fecha_nacimiento);
     await ServiceContainer.autor.create
       .run(

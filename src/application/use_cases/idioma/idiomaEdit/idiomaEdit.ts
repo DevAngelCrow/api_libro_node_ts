@@ -24,7 +24,6 @@ export class IdiomaEdit{
         );
 
         const idiomaRepo = await this.repository.getOneById(new IdiomaId(id));
-        console.log(idiomaRepo, 'idiomaRepo')
         if(!idiomaRepo){throw CustomError.notFound("El registro de idioma no fue encontrado")}
 
         return  this.repository.update(idiomaEdit);

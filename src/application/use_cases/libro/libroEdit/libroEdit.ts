@@ -10,11 +10,12 @@ import {
   LibroIdFormato,
   LibroNombre,
   LibroPortada,
-  LibroIdIdioma,
+  //LibroIdIdioma,
   LibroResumen,
   LibroNumeroPaginas,
   LibroAutores,
   LibroEditoriales,
+  LibroIdiomas,
 } from "../../../../domain/valueObject";
 import { LibroPortadaMultimedia } from "../../../../domain/valueObject/libroValueObject/libroPortadaMultimedia.value.object";
 
@@ -30,12 +31,13 @@ export class LibroEdit {
     portada: string,
     id_formato_libro: number,
     estado: boolean,
-    id_idioma: number,
+    //id_idioma: number,
     resumen: string,
     numero_paginas: number,
     portada_multimedia: Buffer,
     autores: Array<number>,
-    editoriales: Array<number>
+    editoriales: Array<number>,
+    idiomas: Array<number>
   ): Promise<void> {
     const libro = new Libro(
       new LibroNombre(nombre),
@@ -44,17 +46,17 @@ export class LibroEdit {
       new LibroEdicion(edicion),
       new LibroPortada(portada),
       new LibroIdFormato(id_formato_libro),
-      new LibroIdIdioma(id_idioma),
+      //new LibroIdIdioma(id_idioma),
       new LibroResumen(resumen),
       new LibroNumeroPaginas(numero_paginas),
       new LibroEstado(estado),
       undefined,
       undefined,
-      undefined,
       new LibroId(id),
       new LibroPortadaMultimedia(portada_multimedia),
       new LibroAutores(autores),
-      new LibroEditoriales(editoriales)
+      new LibroEditoriales(editoriales),
+      new LibroIdiomas(idiomas)
     );
 
     const libroExist = await this.repository.getOneById(libro.id!);
