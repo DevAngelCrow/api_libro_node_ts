@@ -141,9 +141,42 @@ export class ImplLibroRepository implements LibroRepository {
           estado: true,
           resumen: true,
           numero_paginas: true,
+          mnt_libro_autor: {
+            select: {
+              mnt_autor: {
+                select: {
+                  id: true,
+                  nombres: true,
+                  apellidos: true,
+                  fecha_nacimiento: true,
+                  telefono: true,
+                  email: true,
+                }
+              }
+            }
+          },
+          mnt_libro_editorial: {
+            select: {
+              mnt_editorial: {
+                select: {
+                  id: true,
+                  nombre: true,
+                }
+              }
+            }
+          },
+          mnt_libro_idioma: {
+            select: {
+              ctl_idioma: {
+                select: {
+                  id: true,
+                  idioma: true,
+                }
+              }
+            }
+          }
         },
       });
-
       if (!libro) {
         return null;
       }
