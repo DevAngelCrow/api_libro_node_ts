@@ -13,10 +13,10 @@ paths:
   /api/autor/{id}:
     get:
       tags:
-        - Autores
-      summary: Obtener autores
-      description: Obtener autores
-      operationId: ObtenerAutores
+        - Autor
+      summary: Obtener autor
+      description: Obtener autor
+      operationId: ObtenerAutor
       parameters:
         - name: id
           in: path
@@ -99,7 +99,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Autor"
-        
+  /api/autor/autores/listado:
+    get:
+        tags:
+          - Autores
+        summary: Obtener autores
+        description: Obtener autores
+        operationId: ObtenerAutores
+        responses:
+          200:
+            description: Autores
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Autor"
+          400:
+            description: Bad Request
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Autor"
+          401:
+            description: Unauthorized
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Autor"
+          403:
+            description: Forbidden
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Autor"
+          500:
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Autor"
 components:
   schemas:
     Autor:
